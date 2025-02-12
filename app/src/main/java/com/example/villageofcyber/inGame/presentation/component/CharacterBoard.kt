@@ -2,9 +2,14 @@ package com.example.villageofcyber.inGame.presentation.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.villageofcyber.R
 
 @Composable
@@ -13,11 +18,18 @@ fun CharacterBoard(
     characterPortraitIds: List<Int>
 ) {
     val rows = characterPortraitIds.chunked(8)
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         rows.forEach { row ->
-            Row {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
                 row.forEach { portraitId ->
                     CharacterProfile(
+                        modifier = Modifier
+                            .weight(1f),
                         who = portraitId
                     )
                 }
@@ -49,6 +61,9 @@ private fun CharacterBoardPreview() {
     ).shuffled()
 
     CharacterBoard(
+        modifier = Modifier
+            .width(300.dp)
+            .height(300.dp),
         characterPortraitIds = characterPortraitIds
     )
 }

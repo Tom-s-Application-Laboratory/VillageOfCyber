@@ -1,8 +1,13 @@
 package com.example.villageofcyber.inGame.presentation.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,21 +23,29 @@ fun CharacterProfile(
     factionRevealedByProphet: List<Int> = emptyList(),
     factionRevealedByTraitor: List<Int> = emptyList()
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = modifier
     ) {
+        val maxWidth = this.maxWidth
+        val maxHeight = this.maxHeight
+
         Portrait(
             modifier = Modifier
-                .width(25.dp),
+                .fillMaxSize(),
             who = who
         )
         Row {
             RoleSticker(
+                modifier = Modifier
+                    .width(maxWidth * 0.5f)
+                    .height(maxHeight * 0.17f),
                 role = role
             )
             Column {
                 repeat(factionRevealedByProphet.size) { index ->
                     FactionBadge(
+                        modifier = Modifier
+                            .size(maxWidth * 0.25f),
                         faction = factionRevealedByProphet[index]
                     )
                 }
@@ -40,6 +53,8 @@ fun CharacterProfile(
             Column {
                 repeat(factionRevealedByTraitor.size) { index ->
                     FactionBadge(
+                        modifier = Modifier
+                            .size(maxWidth * 0.25f),
                         faction = factionRevealedByTraitor[index]
                     )
                 }
@@ -60,7 +75,8 @@ private fun CharacterProfilePreview() {
         ),
         factionRevealedByTraitor = listOf(
             R.drawable.traitor1_result_citizen,
-            R.drawable.traitor2_result_wolf
+            R.drawable.traitor2_result_wolf,
+            R.drawable.traitor3_result_wolf
         )
     )
 }
