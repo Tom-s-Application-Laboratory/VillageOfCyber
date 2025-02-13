@@ -12,6 +12,7 @@ class ButtonComingOutProphetKtTest {
     @get: Rule
     val composeTestRule = createComposeRule()
 
+    // ButtonComingOutProphet click 여부를 확인
     @Test
     fun onClickTest() {
         var isClicked = false

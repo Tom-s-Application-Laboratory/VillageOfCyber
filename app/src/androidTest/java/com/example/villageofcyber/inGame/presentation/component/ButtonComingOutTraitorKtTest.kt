@@ -12,6 +12,7 @@ class ButtonComingOutTraitorKtTest {
     @get: Rule
     val composeTestRule = createComposeRule()
 
+    // ButtonComingOutTraitor click 여부를 확인
     @Test
     fun onClickTest() {
         var isClicked = false

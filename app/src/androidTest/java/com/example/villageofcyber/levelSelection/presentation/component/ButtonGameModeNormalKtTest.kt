@@ -12,6 +12,7 @@ class ButtonGameModeNormalKtTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    // ButtonGameModeNormal click 여부를 확인
     @Test
     fun onClickTest() {
         var isClicked = false

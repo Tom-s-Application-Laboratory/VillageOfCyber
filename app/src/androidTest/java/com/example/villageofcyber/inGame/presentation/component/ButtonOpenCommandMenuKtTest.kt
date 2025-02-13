@@ -12,6 +12,7 @@ class ButtonOpenCommandMenuKtTest {
     @get: Rule
     val composeTestRule = createComposeRule()
 
+    // ButtonOpenCommendMenu click 여부를 확인
     @Test
     fun onClickTest() {
         var isClicked = false

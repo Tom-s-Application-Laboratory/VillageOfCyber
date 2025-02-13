@@ -12,6 +12,7 @@ class ButtonNextDayKtTest {
     @get: Rule
     val composeTestRule = createComposeRule()
 
+    // ButtonNextDay click 여부를 확인
     @Test
     fun onClickTest() {
         var isClicked = false
