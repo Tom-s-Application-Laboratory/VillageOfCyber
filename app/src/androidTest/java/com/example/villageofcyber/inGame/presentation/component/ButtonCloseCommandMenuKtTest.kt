@@ -1,12 +1,31 @@
 package com.example.villageofcyber.inGame.presentation.component
 
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import org.junit.Assert.*
+import org.junit.Rule
 
 import org.junit.Test
 
 class ButtonCloseCommandMenuKtTest {
+    @get: Rule
+    val composeTestRule = createComposeRule()
 
+    // ButtonCloseCommandMenu click 여부를 확인
     @Test
-    fun buttonCloseCommandMenu() {
+    fun onClickTest() {
+        var isClicked = false
+
+        composeTestRule.setContent {
+            ButtonCloseCommandMenu {
+                isClicked = true
+            }
+        }
+
+        composeTestRule.onNodeWithTag(testTag = "ButtonCloseCommandMenu").assertExists()
+        composeTestRule.onNodeWithTag(testTag = "ButtonCloseCommandMenu").performClick()
+
+        assertTrue(isClicked)
     }
 }
