@@ -13,7 +13,7 @@ class ButtonComingOutProphetKtTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun `onClickTest`() {
+    fun onClickTest() {
         var isClicked = false
 
         composeTestRule.setContent {

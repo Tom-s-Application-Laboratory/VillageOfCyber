@@ -14,7 +14,7 @@ class ButtonGameStartKtTest {
 
     // ButtonGameStart click 여부를 확인
     @Test
-    fun `onClickTest`() {
+    fun onClickTest() {
         var isClicked = false
 
         composeTestRule.setContent {
