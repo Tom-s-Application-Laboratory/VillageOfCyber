@@ -2,6 +2,7 @@ package com.example.villageofcyber.inGame.presentation.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,9 +23,13 @@ fun NoticeBoard(
     modifier: Modifier = Modifier,
     message: String
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = modifier
     ) {
+        val maxWidth = this.maxWidth
+        val maxHeight = this.maxHeight
+        val fontSize = with(LocalDensity.current) { maxHeight.value * 0.04f }.sp
+
         Image(
             modifier = Modifier
                 .matchParentSize(),
@@ -33,9 +39,9 @@ fun NoticeBoard(
         )
         Text(
             modifier = Modifier
-                .padding(vertical = 3.dp, horizontal = 5.dp),
+                .padding(vertical = maxHeight * 0.04f, horizontal = maxWidth * 0.06f),
             text = message,
-            fontSize = 6.sp
+            fontSize = fontSize
         )
     }
 }
@@ -45,7 +51,7 @@ fun NoticeBoard(
 private fun NoticeBoardPreview() {
     NoticeBoard(
         modifier = Modifier
-            .size(100.dp),
+            .size(500.dp),
         message = "hellodddddddddddd\ndddddddddddd"
     )
 }
