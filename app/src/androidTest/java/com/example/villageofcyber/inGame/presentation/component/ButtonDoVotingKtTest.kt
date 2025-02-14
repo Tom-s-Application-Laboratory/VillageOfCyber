@@ -8,7 +8,7 @@ import org.junit.Rule
 
 import org.junit.Test
 
-class ButtonNextDayKtTest {
+class ButtonDoVotingKtTest {
     @get: Rule
     val composeTestRule = createComposeRule()
 
@@ -18,13 +18,13 @@ class ButtonNextDayKtTest {
         var isClicked = false
 
         composeTestRule.setContent {
-            ButtonNextDay {
+            ButtonDoVoting {
                 isClicked = true
             }
         }
 
-        composeTestRule.onNodeWithTag(testTag = "ButtonNextDay").assertExists()
-        composeTestRule.onNodeWithTag(testTag = "ButtonNextDay").performClick()
+        composeTestRule.onNodeWithTag(testTag = "ButtonDoVoting").assertExists()
+        composeTestRule.onNodeWithTag(testTag = "ButtonDoVoting").performClick()
 
         assertTrue(isClicked)
     }

@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.villageofcyber.R
 
 @Composable
-fun ButtonNextDay(
+fun ButtonDoVoting(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -20,8 +20,8 @@ fun ButtonNextDay(
             .clickable {
                 onClick()
             }
-            .testTag(tag = "ButtonNextDay"),
-        painter = painterResource(R.drawable.button_next_day),
+            .testTag(tag = "ButtonDoVoting"),
+        painter = painterResource(R.drawable.button_do_voting),
         contentScale = ContentScale.FillBounds,
         contentDescription = null
     )
@@ -30,7 +30,7 @@ fun ButtonNextDay(
 @Preview
 @Composable
 private fun ButtonNextDayPreview() {
-    ButtonNextDay(
+    ButtonDoVoting(
         onClick = {}
     )
 }
