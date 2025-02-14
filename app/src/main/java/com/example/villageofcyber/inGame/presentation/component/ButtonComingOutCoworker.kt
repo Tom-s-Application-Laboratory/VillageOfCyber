@@ -16,7 +16,7 @@ fun ButtonComingOutCoworker(
     onClick: () -> Unit
 ) {
     Image(
-        modifier = Modifier
+        modifier = modifier
             .clickable {
                 onClick()
             }
