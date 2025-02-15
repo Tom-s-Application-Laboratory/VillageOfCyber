@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.common.ktx)
     testImplementation(libs.junit)
     testImplementation(libs.junit.junit)
     testImplementation(libs.junit.junit)
