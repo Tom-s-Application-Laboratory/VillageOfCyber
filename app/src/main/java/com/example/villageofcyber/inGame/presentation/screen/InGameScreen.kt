@@ -24,6 +24,7 @@ import com.example.villageofcyber.inGame.presentation.component.CharacterBoard
 import com.example.villageofcyber.inGame.presentation.component.CommandMenu
 import com.example.villageofcyber.inGame.presentation.component.DailyStatusPanel
 import com.example.villageofcyber.inGame.presentation.component.NoticeBoard
+import com.example.villageofcyber.inGame.presentation.component.RoleBoard
 
 @Composable
 fun InGameScreen(
@@ -41,10 +42,12 @@ fun InGameScreen(
             contentScale = ContentScale.FillBounds,
             contentDescription = null
         )
-        Column {
+        Column(
+            modifier = modifier
+        ) {
             Row {
                 CharacterBoard(
-                    modifier = modifier
+                    modifier = Modifier
                         .width(280.dp)
                         .height(200.dp),
                     characterPortraitIds = characterPortraitIds
@@ -60,35 +63,41 @@ fun InGameScreen(
                 )
             }
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
-            NoticeBoard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(500.dp),
-                message = "Hello\nwow"
-            )
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                ButtonOpenCommandMenu(
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(100.dp)
-                ) {
-
-                }
-                ButtonDoVoting(
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(100.dp)
-                ) {
-
-                }
-            }
+//            NoticeBoard(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(500.dp),
+//                message = "Hello\nwow"
+//            )
+//            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+//            Row(
+//                horizontalArrangement = Arrangement.spacedBy(20.dp)
+//            ) {
+//                ButtonOpenCommandMenu(
+//                    modifier = Modifier
+//                        .width(120.dp)
+//                        .height(100.dp)
+//                ) {
+//
+//                }
+//                ButtonDoVoting(
+//                    modifier = Modifier
+//                        .width(120.dp)
+//                        .height(100.dp)
+//                ) {
+//
+//                }
+//            }
             CommandMenu(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(600.dp)
+                    .height(500.dp)
+            )
+            Spacer(modifier = Modifier.padding(15.dp))
+            RoleBoard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
             )
         }
     }
