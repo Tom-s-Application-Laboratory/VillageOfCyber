@@ -41,10 +41,12 @@ fun InGameScreen(
             contentScale = ContentScale.FillBounds,
             contentDescription = null
         )
-        Column {
+        Column(
+            modifier = modifier
+        ) {
             Row {
                 CharacterBoard(
-                    modifier = modifier
+                    modifier = Modifier
                         .width(280.dp)
                         .height(200.dp),
                     characterPortraitIds = characterPortraitIds
