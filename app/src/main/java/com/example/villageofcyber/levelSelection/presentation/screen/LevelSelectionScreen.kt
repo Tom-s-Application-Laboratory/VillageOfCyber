@@ -46,7 +46,7 @@ fun LevelSelectionScreen(
                     .width(300.dp)
                     .height(80.dp)
             ) {
-
+                onButtonGameModeNormalClick()
             }
         }
     }
