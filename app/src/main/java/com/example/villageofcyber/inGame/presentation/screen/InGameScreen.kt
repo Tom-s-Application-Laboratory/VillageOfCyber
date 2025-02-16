@@ -25,6 +25,7 @@ import com.example.villageofcyber.inGame.presentation.component.CommandMenu
 import com.example.villageofcyber.inGame.presentation.component.DailyStatusPanel
 import com.example.villageofcyber.inGame.presentation.component.NoticeBoard
 import com.example.villageofcyber.inGame.presentation.component.RoleBoard
+import com.example.villageofcyber.inGame.presentation.component.SpeakingSpot
 import com.example.villageofcyber.inGame.presentation.viewModel.InGameAction
 import com.example.villageofcyber.inGame.presentation.viewModel.InGameState
 
@@ -110,6 +111,15 @@ fun InGameScreen(
                         .height(100.dp)
                 )
             }
+        }
+        if(state.visibleSpeakingSpot) {
+            SpeakingSpot(
+                modifier = Modifier
+                    .width(350.dp)
+                    .height(400.dp),
+                who = R.drawable.brothel,
+                message = "살려주세요."
+            )
         }
     }
 }
