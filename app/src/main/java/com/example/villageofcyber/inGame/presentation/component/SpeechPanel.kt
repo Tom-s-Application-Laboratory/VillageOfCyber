@@ -2,6 +2,7 @@ package com.example.villageofcyber.inGame.presentation.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,7 +29,8 @@ fun SpeechPanel(
         val maxHeight = maxHeight
 
         Image(
-            modifier = modifier,
+            modifier = Modifier
+                .fillMaxSize(),
             painter = painterResource(R.drawable.message_frame),
             contentScale = ContentScale.FillBounds,
             contentDescription = null
