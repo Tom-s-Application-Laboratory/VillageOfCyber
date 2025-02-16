@@ -52,7 +52,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.navigation.common.ktx)
     testImplementation(libs.junit)
     testImplementation(libs.junit.junit)
     testImplementation(libs.junit.junit)
@@ -65,6 +64,7 @@ dependencies {
 
     // @Serializable 어노테이션을 사용하여 직렬화를 하기 위함.
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.navigation.common.ktx)
 
     // navigation 사용을 위함.
     implementation(libs.androidx.navigation.compose)
