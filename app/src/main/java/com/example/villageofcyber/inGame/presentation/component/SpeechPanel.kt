@@ -41,7 +41,7 @@ fun SpeechPanel(
                 .padding(top = maxHeight * 0.22f),
             text = message,
             color = Color.White,
-            fontSize = (maxHeight * 0.12f).value.sp
+            fontSize = (maxHeight * 0.15f).value.sp
         )
     }
 }
