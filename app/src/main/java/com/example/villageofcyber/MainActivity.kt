@@ -33,7 +33,8 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavigationRoot(
                         navController = navController,
-                        innerPadding = innerPadding
+                        innerPadding = innerPadding,
+                        inGameViewModel = inGameViewModel
                     )
                 }
             }
