@@ -3,12 +3,14 @@ package com.example.villageofcyber.core.navigation
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.villageofcyber.R
 import com.example.villageofcyber.inGame.presentation.screen.InGameScreen
+import com.example.villageofcyber.inGame.presentation.viewModel.InGameViewModel
 import com.example.villageofcyber.levelSelection.presentation.screen.LevelSelectionScreen
 import com.example.villageofcyber.title.presentation.screen.TitleScreen
 import kotlinx.serialization.Serializable
@@ -16,7 +18,8 @@ import kotlinx.serialization.Serializable
 @Composable
 fun NavigationRoot(
     navController: NavHostController,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    inGameViewModel: InGameViewModel
 ) {
     NavHost(
         navController = navController,
@@ -45,6 +48,8 @@ fun NavigationRoot(
         }
 
         composable<Route.InGame> {
+            // 이 캐릭터들 바깥으로 리컴포지션이 일어날 때마다 셔플이 되니까
+            // 뷰모델로 빼서 이곳으로 건네주면 된다.
             val characterPortraitIds: List<Int> = listOf(
                 R.drawable.mini_girl,
                 R.drawable.mini_widow,
@@ -66,8 +71,11 @@ fun NavigationRoot(
             InGameScreen(
                 modifier = Modifier
                     .padding(innerPadding),
+                state = inGameViewModel.state.collectAsState().value,
                 characterPortraitIds = characterPortraitIds
-            )
+            ) { inGameAction ->
+                inGameViewModel.onAction(inGameAction)
+            }
         }
     }
 }

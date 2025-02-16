@@ -25,11 +25,15 @@ import com.example.villageofcyber.inGame.presentation.component.CommandMenu
 import com.example.villageofcyber.inGame.presentation.component.DailyStatusPanel
 import com.example.villageofcyber.inGame.presentation.component.NoticeBoard
 import com.example.villageofcyber.inGame.presentation.component.RoleBoard
+import com.example.villageofcyber.inGame.presentation.viewModel.InGameAction
+import com.example.villageofcyber.inGame.presentation.viewModel.InGameState
 
 @Composable
 fun InGameScreen(
     modifier: Modifier = Modifier,
-    characterPortraitIds: List<Int>
+    state: InGameState = InGameState(),
+    characterPortraitIds: List<Int>,
+    onAction: (InGameAction) -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -63,42 +67,49 @@ fun InGameScreen(
                 )
             }
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
-//            NoticeBoard(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(500.dp),
-//                message = "Hello\nwow"
-//            )
-//            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-//            Row(
-//                horizontalArrangement = Arrangement.spacedBy(20.dp)
-//            ) {
-//                ButtonOpenCommandMenu(
-//                    modifier = Modifier
-//                        .width(120.dp)
-//                        .height(100.dp)
-//                ) {
-//
-//                }
-//                ButtonDoVoting(
-//                    modifier = Modifier
-//                        .width(120.dp)
-//                        .height(100.dp)
-//                ) {
-//
-//                }
-//            }
-            CommandMenu(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(500.dp)
-            )
-            Spacer(modifier = Modifier.padding(15.dp))
-            RoleBoard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-            )
+            if(state.visibleNoticeBoard) {
+                NoticeBoard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(500.dp),
+                    message = "Hello\nwow"
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    ButtonOpenCommandMenu(
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(100.dp)
+                    ) {
+                        onAction(InGameAction.OnClickOpenCommandMenu)
+                    }
+                    ButtonDoVoting(
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(100.dp)
+                    ) {
+
+                    }
+                }
+            }
+            if(state.visibleCommandMenu) {
+                CommandMenu(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(500.dp)
+                ) { inGameAction ->
+                    onAction(inGameAction)
+                }
+                Spacer(modifier = Modifier.padding(15.dp))
+                RoleBoard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                )
+            }
         }
     }
 }

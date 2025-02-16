@@ -10,12 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.villageofcyber.inGame.presentation.viewModel.InGameAction
 
 @Composable
 fun CommandMenu(
     modifier: Modifier = Modifier,
-    // to feature from ui
-    // onAction: (RegisterAction) -> Unit ; 이렇게 사용자 정의 액션을 정의하면 구조가 깔끔합니다.
+    onAction: (InGameAction) -> Unit = {}
 ) {
     Column(
         modifier = modifier,
@@ -92,7 +92,7 @@ fun CommandMenu(
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickCloseCommandMenu)
             }
         }
     }
