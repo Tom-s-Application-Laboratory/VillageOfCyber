@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.villageofcyber.inGame.presentation.screen.InGameScreen
 import com.example.villageofcyber.title.presentation.screen.TitleScreen
 import com.example.villageofcyber.ui.theme.VillageOfCyberTheme
 
@@ -22,6 +23,8 @@ class MainActivity : ComponentActivity() {
             VillageOfCyberTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     innerPadding
+
+
                 }
             }
         }
