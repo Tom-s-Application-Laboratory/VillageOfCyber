@@ -6,5 +6,7 @@ data class InGameState(
     val visibleSpeakingSpot: Boolean = false,
 
     val dayStart: Boolean = true,
-    val transparencyOfBlackPanel: Float = 1f
+    val transparencyOfBlackPanel: Float = 1f,
+
+    val characterPortraitIds: List<Int> = emptyList()
 )

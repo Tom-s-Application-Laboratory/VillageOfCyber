@@ -6,6 +6,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.villageofcyber.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,33 @@ import kotlinx.coroutines.launch
 class InGameViewModel: ViewModel() {
     private var _state = MutableStateFlow(InGameState())
     val state = _state.asStateFlow()
+
+    init {
+        val characterPortraitIds: List<Int> = listOf(
+            R.drawable.mini_girl,
+            R.drawable.mini_widow,
+            R.drawable.mini_woman,
+            R.drawable.mini_brotel,
+            R.drawable.mini_dancer,
+            R.drawable.mini_singer,
+            R.drawable.mini_washer,
+            R.drawable.mini_young_man,
+            R.drawable.mini_mercenary,
+            R.drawable.mini_teacher,
+            R.drawable.mini_peerage,
+            R.drawable.mini_servant,
+            R.drawable.mini_village_girl,
+            R.drawable.mini_sword_woman,
+            R.drawable.mini_embroidery,
+            R.drawable.mini_musician
+        ).shuffled()
+
+        _state.update {
+            it.copy(
+                characterPortraitIds = characterPortraitIds
+            )
+        }
+    }
 
     fun onAction(action: InGameAction) {
         when(action) {
