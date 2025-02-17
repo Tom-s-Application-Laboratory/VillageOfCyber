@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.villageofcyber.R
+import com.example.villageofcyber.inGame.presentation.component.BlackPanel
 import com.example.villageofcyber.inGame.presentation.component.ButtonDoVoting
 import com.example.villageofcyber.inGame.presentation.component.ButtonOpenCommandMenu
 import com.example.villageofcyber.inGame.presentation.component.CharacterBoard
@@ -36,6 +38,10 @@ fun InGameScreen(
     characterPortraitIds: List<Int>,
     onAction: (InGameAction) -> Unit = {}
 ) {
+    if(state.dayStart) {
+        onAction(InGameAction.operateBlackPanel)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -122,6 +128,11 @@ fun InGameScreen(
             )
         }
     }
+    BlackPanel(
+        modifier = Modifier
+            .fillMaxSize()
+            .alpha(state.transparencyOfBlackPanel)
+    )
 }
 
 @Preview
