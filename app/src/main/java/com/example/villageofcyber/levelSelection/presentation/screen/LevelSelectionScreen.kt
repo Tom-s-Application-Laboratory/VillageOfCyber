@@ -20,6 +20,7 @@ import com.example.villageofcyber.levelSelection.presentation.component.ButtonGa
 
 @Composable
 fun LevelSelectionScreen(
+    modifier: Modifier = Modifier,
     onButtonGameModeNormalClick: () -> Unit
 ) {
     Box(
@@ -45,7 +46,7 @@ fun LevelSelectionScreen(
                     .width(300.dp)
                     .height(80.dp)
             ) {
-
+                onButtonGameModeNormalClick()
             }
         }
     }

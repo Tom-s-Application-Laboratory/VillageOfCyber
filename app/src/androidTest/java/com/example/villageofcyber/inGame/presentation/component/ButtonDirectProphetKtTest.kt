@@ -1,4 +1,4 @@
-package com.example.villageofcyber.title.presentation.component
+package com.example.villageofcyber.inGame.presentation.component
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -8,23 +8,23 @@ import org.junit.Rule
 
 import org.junit.Test
 
-class ButtonGameStartKtTest {
-    @get:Rule
+class ButtonDirectProphetKtTest {
+    @get: Rule
     val composeTestRule = createComposeRule()
 
-    // ButtonGameStart click 여부를 확인
+    // ButtonDirectProphet click 여부를 확인
     @Test
     fun onClickTest() {
         var isClicked = false
 
         composeTestRule.setContent {
-            ButtonGameStart {
+            ButtonDirectProphet {
                 isClicked = true
             }
         }
 
-        composeTestRule.onNodeWithTag(testTag = "ButtonGameStart").assertExists()
-        composeTestRule.onNodeWithTag(testTag = "ButtonGameStart").performClick()
+        composeTestRule.onNodeWithTag(testTag = "ButtonDirectProphet").assertExists()
+        composeTestRule.onNodeWithTag(testTag = "ButtonDirectProphet").performClick()
 
         assertTrue(isClicked)
     }

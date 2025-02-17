@@ -21,6 +21,7 @@ import com.example.villageofcyber.title.presentation.component.ButtonGameStart
 
 @Composable
 fun TitleScreen(
+    modifier: Modifier = Modifier,
     onButtonGameStartClick: () -> Unit
 ) {
     Box(
