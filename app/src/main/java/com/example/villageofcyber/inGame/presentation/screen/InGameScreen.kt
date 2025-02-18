@@ -121,7 +121,7 @@ private fun InGameScreenPreview() {
         R.drawable.mini_girl,
         R.drawable.mini_widow,
         R.drawable.mini_woman,
-        R.drawable.mini_brotel,
+        R.drawable.mini_brothel,
         R.drawable.mini_dancer,
         R.drawable.mini_singer,
         R.drawable.mini_washer,
