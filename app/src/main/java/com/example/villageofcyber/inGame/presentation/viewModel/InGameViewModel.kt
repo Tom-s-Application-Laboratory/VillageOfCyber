@@ -11,8 +11,10 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.villageofcyber.core.application.AppApplication
 import com.example.villageofcyber.inGame.domain.repository.CharacterRepository
 import com.example.villageofcyber.inGame.domain.modelClass.Character
+import com.example.villageofcyber.inGame.domain.modelClass.SurviveStatus
 import com.example.villageofcyber.inGame.domain.useCase.GetCharacterWhoHasFirstBloodUseCase
 import com.example.villageofcyber.inGame.domain.useCase.GetCharacterMiniFacesUseCase
+import com.example.villageofcyber.inGame.domain.useCase.UpdateCharacterMiniFacesUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,7 +27,8 @@ import kotlinx.coroutines.launch
 class InGameViewModel(
     private val repository: CharacterRepository,
     private val getCharacterMiniFacesUseCase: GetCharacterMiniFacesUseCase,
-    private val getCharacterWhoHasFirstBloodUseCase: GetCharacterWhoHasFirstBloodUseCase
+    private val getCharacterWhoHasFirstBloodUseCase: GetCharacterWhoHasFirstBloodUseCase,
+    private val updateCharacterMiniFacesUseCase: UpdateCharacterMiniFacesUseCase
 ): ViewModel() {
     private var _state = MutableStateFlow(InGameState())
     val state = _state.asStateFlow()
@@ -89,12 +92,35 @@ class InGameViewModel(
                             nextMessage = false
                         )
                     }
+                    who.alive = SurviveStatus.ATTACKED
+                    updateCharacterBoard(characters)
                 }
                 delay(timeMillis = 100)
             }
         }
     }
 
+    private fun updateCharacterBoard(characters: List<Character>) {
+        characters.forEachIndexed { index, character ->
+            when(character.alive) {
+                SurviveStatus.ALIVE -> {}
+                SurviveStatus.KILLED -> {
+                    _state.update {
+                        it.copy(
+                            characterPortraitIds = updateCharacterMiniFacesUseCase.execute(characters)
+                        )
+                    }
+                }
+                SurviveStatus.ATTACKED -> {
+                    _state.update {
+                        it.copy(
+                            characterPortraitIds = updateCharacterMiniFacesUseCase.execute(characters)
+                        )
+                    }
+                }
+            }
+        }
+    }
     private fun printTextWithTypingEffect(text: String) {
         _state.update {
             it.copy(
@@ -176,11 +202,12 @@ class InGameViewModel(
                 val characterRepository = (this[APPLICATION_KEY] as AppApplication).characterRepository
                 val getCharacterMiniFacesUseCase = (this[APPLICATION_KEY] as AppApplication).getCharacterMiniFacesUseCase
                 val getCharacterWhoHasFirstBloodUseCase = (this[APPLICATION_KEY] as AppApplication).getCharacterWhoHasFirstBloodUseCase
-
+                val updateCharacterMiniFacesUseCase = (this[APPLICATION_KEY] as AppApplication).updateCharacterMiniFacesUseCase
                 InGameViewModel(
                     repository = characterRepository,
                     getCharacterMiniFacesUseCase = getCharacterMiniFacesUseCase,
-                    getCharacterWhoHasFirstBloodUseCase = getCharacterWhoHasFirstBloodUseCase
+                    getCharacterWhoHasFirstBloodUseCase = getCharacterWhoHasFirstBloodUseCase,
+                    updateCharacterMiniFacesUseCase = updateCharacterMiniFacesUseCase
                 )
             }
         }
