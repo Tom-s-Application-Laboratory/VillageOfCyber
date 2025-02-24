@@ -21,5 +21,7 @@ data class InGameState(
 
     val characterFaceWhoIsSpeaking: Int? = null,
     val messageFromSpeaker: String = "",
-    val nextMessage: Boolean = false
+    val nextMessage: Boolean = false,
+
+    val isTalkingNow: Boolean = false
 )
