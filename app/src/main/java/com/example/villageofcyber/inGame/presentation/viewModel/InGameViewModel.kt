@@ -2,40 +2,35 @@ package com.example.villageofcyber.inGame.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.villageofcyber.R
+import com.example.villageofcyber.core.application.AppApplication
+import com.example.villageofcyber.inGame.data.dataSource.CharacterDataSrouceImpl
+import com.example.villageofcyber.inGame.data.repository.CharacterRepositoryImpl
+import com.example.villageofcyber.inGame.domain.repository.CharacterRepository
+import com.example.villageofcyber.inGame.domain.modelClass.Character
+import com.example.villageofcyber.inGame.domain.useCase.GetCharacterMiniFacesUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class InGameViewModel: ViewModel() {
+class InGameViewModel(
+    private val repository: CharacterRepository,
+    private val getCharacterMiniFacesUseCase: GetCharacterMiniFacesUseCase
+): ViewModel() {
     private var _state = MutableStateFlow(InGameState())
     val state = _state.asStateFlow()
 
+    private val characters: List<Character> = repository.getInitializedCharacters()
+
     init {
-        val characterPortraitIds: List<Int> = listOf(
-            R.drawable.mini_girl,
-            R.drawable.mini_widow,
-            R.drawable.mini_woman,
-            R.drawable.mini_brothel,
-            R.drawable.mini_dancer,
-            R.drawable.mini_singer,
-            R.drawable.mini_washer,
-            R.drawable.mini_young_man,
-            R.drawable.mini_mercenary,
-            R.drawable.mini_teacher,
-            R.drawable.mini_peerage,
-            R.drawable.mini_servant,
-            R.drawable.mini_village_girl,
-            R.drawable.mini_sword_woman,
-            R.drawable.mini_embroidery,
-            R.drawable.mini_musician
-        ).shuffled()
+        val characterPortraitIds: List<Int> = getCharacterMiniFacesUseCase.execute(characters)
 
         _state.update {
             it.copy(
@@ -92,7 +87,13 @@ class InGameViewModel: ViewModel() {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val savedStateHandle = createSavedStateHandle()
-                InGameViewModel()
+                val characterRepository = (this[APPLICATION_KEY] as AppApplication).characterRepository
+                val getCharacterMiniFacesUseCase = (this[APPLICATION_KEY] as AppApplication).getCharacterMiniFacesUseCase
+
+                InGameViewModel(
+                    repository = characterRepository,
+                    getCharacterMiniFacesUseCase = getCharacterMiniFacesUseCase
+                )
             }
         }
     }
