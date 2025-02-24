@@ -7,12 +7,10 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.villageofcyber.R
 import com.example.villageofcyber.core.application.AppApplication
-import com.example.villageofcyber.inGame.data.dataSource.CharacterDataSrouceImpl
-import com.example.villageofcyber.inGame.data.repository.CharacterRepositoryImpl
 import com.example.villageofcyber.inGame.domain.repository.CharacterRepository
 import com.example.villageofcyber.inGame.domain.modelClass.Character
+import com.example.villageofcyber.inGame.domain.useCase.GetCharacterWhoHasFirstBloodUseCase
 import com.example.villageofcyber.inGame.domain.useCase.GetCharacterMiniFacesUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +20,8 @@ import kotlinx.coroutines.launch
 
 class InGameViewModel(
     private val repository: CharacterRepository,
-    private val getCharacterMiniFacesUseCase: GetCharacterMiniFacesUseCase
+    private val getCharacterMiniFacesUseCase: GetCharacterMiniFacesUseCase,
+    private val getCharacterWhoHasFirstBloodUseCase: GetCharacterWhoHasFirstBloodUseCase
 ): ViewModel() {
     private var _state = MutableStateFlow(InGameState())
     val state = _state.asStateFlow()
@@ -43,7 +42,59 @@ class InGameViewModel(
         when(action) {
             InGameAction.OnClickCloseCommandMenu -> closeCommandMenu()
             InGameAction.OnClickOpenCommandMenu -> openCommandMenu()
-            InGameAction.operateBlackPanel -> operateBlackPanel()
+            InGameAction.OperateBlackPanel -> operateBlackPanel()
+            InGameAction.OnClickNextSpeaking -> turnOnNextMessageToggle()
+            InGameAction.AnnounceFirstBlood -> announceFirstBlood()
+        }
+    }
+
+    private fun announceFirstBlood() {
+        val who = getCharacterWhoHasFirstBloodUseCase.execute(characters)
+
+        _state.update {
+            it.copy(
+                visibleSpeakingSpot = true,
+                characterFaceWhoIsSpeaking = who.bigFace,
+                messageFromSpeaker = "어젯밤 ${who.name}님이..."
+            )
+        }
+
+        viewModelScope.launch {
+            while(true) {
+                if(_state.value.nextMessage) {
+                    _state.update {
+                        it.copy(
+                            characterFaceWhoIsSpeaking = who.bigDeadFace,
+                            messageFromSpeaker = "늑대에게 습격 당했습니다...",
+                            nextMessage = false
+                        )
+                    }
+                    break
+                }
+                delay(timeMillis = 100)
+            }
+
+            while(true) {
+                if(_state.value.nextMessage) {
+                    _state.update {
+                        it.copy(
+                            visibleSpeakingSpot = false,
+                            characterFaceWhoIsSpeaking = null,
+                            messageFromSpeaker = "",
+                            nextMessage = false
+                        )
+                    }
+                }
+                delay(timeMillis = 100)
+            }
+        }
+    }
+
+    private fun turnOnNextMessageToggle() {
+        _state.update {
+            it.copy(
+                nextMessage = true
+            )
         }
     }
 
@@ -89,10 +140,12 @@ class InGameViewModel(
                 val savedStateHandle = createSavedStateHandle()
                 val characterRepository = (this[APPLICATION_KEY] as AppApplication).characterRepository
                 val getCharacterMiniFacesUseCase = (this[APPLICATION_KEY] as AppApplication).getCharacterMiniFacesUseCase
+                val getCharacterWhoHasFirstBloodUseCase = (this[APPLICATION_KEY] as AppApplication).getCharacterWhoHasFirstBloodUseCase
 
                 InGameViewModel(
                     repository = characterRepository,
-                    getCharacterMiniFacesUseCase = getCharacterMiniFacesUseCase
+                    getCharacterMiniFacesUseCase = getCharacterMiniFacesUseCase,
+                    getCharacterWhoHasFirstBloodUseCase = getCharacterWhoHasFirstBloodUseCase
                 )
             }
         }

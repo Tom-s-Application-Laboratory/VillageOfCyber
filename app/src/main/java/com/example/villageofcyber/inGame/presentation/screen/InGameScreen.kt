@@ -40,7 +40,8 @@ fun InGameScreen(
     onAction: (InGameAction) -> Unit = {}
 ) {
     if(state.dayStart) {
-        onAction(InGameAction.operateBlackPanel)
+        onAction(InGameAction.OperateBlackPanel)
+        onAction(InGameAction.AnnounceFirstBlood)
     }
 
     Box(
@@ -126,16 +127,19 @@ fun InGameScreen(
                 modifier = Modifier
                     .width(350.dp)
                     .height(400.dp),
-                who = R.drawable.brothel,
-                message = "살려주세요."
+                who = state.characterFaceWhoIsSpeaking ?: throw Exception("from InGameScreen. there is no person on speaking spot"),
+                message = state.messageFromSpeaker,
+                onClick = {
+                    onAction(InGameAction.OnClickNextSpeaking)
+                }
             )
         }
     }
-//    BlackPanel(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .alpha(state.transparencyOfBlackPanel)
-//    )
+    BlackPanel(
+        modifier = Modifier
+            .fillMaxSize()
+            .alpha(state.transparencyOfBlackPanel)
+    )
 }
 
 @Preview

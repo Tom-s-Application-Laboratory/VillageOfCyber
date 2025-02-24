@@ -1,6 +1,7 @@
 package com.example.villageofcyber.inGame.presentation.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ fun SpeakingSpot(
     modifier: Modifier = Modifier,
     who: Int,
     message: String = "",
+    onClick: () -> Unit = {}
 ) {
     Box(    // 터치 이벤트를 가로채기 위함.
         modifier = Modifier
@@ -51,7 +53,10 @@ fun SpeakingSpot(
                 )
                 SpeechPanel(
                     modifier = Modifier
-                        .height(maxHeight * 0.3f),
+                        .height(maxHeight * 0.3f)
+                        .clickable {
+                            onClick()
+                        },
                     message = message
                 )
             }
