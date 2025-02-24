@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
@@ -43,7 +44,7 @@ fun InGameScreen(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         Image(
@@ -54,12 +55,13 @@ fun InGameScreen(
             contentDescription = null
         )
         Column(
-            modifier = modifier
+            modifier = Modifier
+                .matchParentSize()
         ) {
             Row {
                 CharacterBoard(
                     modifier = Modifier
-                        .width(280.dp)
+                        .width(260.dp)
                         .height(200.dp),
                     characterPortraitIds = characterPortraitIds
                 )
@@ -68,7 +70,7 @@ fun InGameScreen(
                     modifier = Modifier
                         .height(200.dp),
                     day = 1,
-                    survivor = 8,
+                    survivor = 12,
                     attacked = 4,
                     killed = 4
                 )
@@ -78,12 +80,13 @@ fun InGameScreen(
                 NoticeBoard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(500.dp),
+                        .height(450.dp),
                     message = "Hello\nwow"
                 )
 
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
                 Row(
+                    verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     ButtonOpenCommandMenu(
@@ -106,7 +109,7 @@ fun InGameScreen(
                 CommandMenu(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(500.dp)
+                        .height(450.dp)
                 ) { inGameAction ->
                     onAction(inGameAction)
                 }
@@ -128,11 +131,11 @@ fun InGameScreen(
             )
         }
     }
-    BlackPanel(
-        modifier = Modifier
-            .fillMaxSize()
-            .alpha(state.transparencyOfBlackPanel)
-    )
+//    BlackPanel(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .alpha(state.transparencyOfBlackPanel)
+//    )
 }
 
 @Preview
