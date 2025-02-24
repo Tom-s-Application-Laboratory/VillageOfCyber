@@ -17,5 +17,9 @@ data class InGameState(
 
     val prophetRoleHistory: Map<Character, List<Character>> = emptyMap(),
     val traitorRoleHistory: Map<Character, List<Character>> = emptyMap(),
-    val hunterRoleHistory: Map<Character, List<Character>> = emptyMap()
+    val hunterRoleHistory: Map<Character, List<Character>> = emptyMap(),
+
+    val characterFaceWhoIsSpeaking: Int? = null,
+    val messageFromSpeaker: String = "",
+    val nextMessage: Boolean = false
 )
