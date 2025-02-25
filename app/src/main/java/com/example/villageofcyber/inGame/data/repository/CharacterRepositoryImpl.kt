@@ -33,7 +33,12 @@ class CharacterRepositoryImpl(
                     role = roles[index],
                     fakeRole = fakeRole,
                     roleSticker = null,
-                    factionBadge = mutableListOf()
+                    factionBadge = mutableListOf(),
+                    dialogueComingOutFirst = characterInformation[index].dialogue[roles[index]]?.getOrElse(index = 0, { throw Exception("from getInitializedCharacters") }) ?: "",
+                    dialogueComingOutLast = characterInformation[index].dialogue[roles[index]]?.getOrElse(index = 1, { throw Exception("from getInitializedCharacters") }) ?: "",
+                    dialoguePleaseThinkAgain = characterInformation[index].dialogue[roles[index]]?.getOrElse(index = 2, { throw Exception("from getInitializedCharacters") }) ?: "",
+                    dialogueLastComment = characterInformation[index].dialogue[roles[index]]?.getOrElse(index = 3, { throw Exception("from getInitializedCharacters") }) ?: "",
+                    dialogueComingOutCoworkerAlone = if(roles[index] == Role.COWORKER) characterInformation[index].dialogue[roles[index]]?.getOrElse(index = 4, { throw Exception("from getInitializedCharacters") }) ?: "" else "",
                 )
             )
         }
