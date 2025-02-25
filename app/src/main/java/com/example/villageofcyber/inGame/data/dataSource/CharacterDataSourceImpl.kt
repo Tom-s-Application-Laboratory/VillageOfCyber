@@ -5,7 +5,7 @@ import com.example.villageofcyber.inGame.data.dto.CharacterDto
 import com.example.villageofcyber.inGame.domain.modelClass.Role
 import com.example.villageofcyber.inGame.domain.modelClass.SurviveStatus
 
-class CharacterDataSrouceImpl : CharacterDataSource {
+class CharacterDataSourceImpl : CharacterDataSource {
     val names = listOf(
         "청년",
         "용병",
