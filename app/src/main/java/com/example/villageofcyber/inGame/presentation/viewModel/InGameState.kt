@@ -23,5 +23,10 @@ data class InGameState(
     val messageFromSpeaker: String = "",
     val nextMessage: Boolean = false,
 
-    val isTalkingNow: Boolean = false
+    val isTalkingNow: Boolean = false,
+
+    val day: Int = -1,
+    val survivor: Int = -1,
+    val attacked: Int = -1,
+    val killed: Int = -1,
 )

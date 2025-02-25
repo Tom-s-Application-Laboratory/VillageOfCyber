@@ -40,7 +40,11 @@ class InGameViewModel(
 
         _state.update {
             it.copy(
-                characterPortraitIds = characterPortraitIds
+                characterPortraitIds = characterPortraitIds,
+                day = 1,
+                survivor = 16,
+                attacked = 0,
+                killed = 0
             )
         }
     }
@@ -94,6 +98,7 @@ class InGameViewModel(
                     }
                     who.alive = SurviveStatus.ATTACKED
                     updateCharacterBoard(characters)
+                    updateDailyStatusPanel(characters)
                 }
                 delay(timeMillis = 100)
             }
@@ -121,6 +126,29 @@ class InGameViewModel(
             }
         }
     }
+
+    private fun updateDailyStatusPanel(characters: List<Character>) {
+        var survivor: Int = 0
+        var attacked: Int = 0
+        var killed: Int = 0
+
+        characters.forEach { character ->
+            when(character.alive) {
+                SurviveStatus.ALIVE -> survivor++
+                SurviveStatus.KILLED -> killed++
+                SurviveStatus.ATTACKED -> attacked++
+            }
+        }
+
+        _state.update {
+            it.copy(
+                survivor = survivor,
+                attacked = attacked,
+                killed = killed
+            )
+        }
+    }
+
     private fun printTextWithTypingEffect(text: String) {
         _state.update {
             it.copy(

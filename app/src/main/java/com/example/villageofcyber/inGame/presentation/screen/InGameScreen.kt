@@ -71,10 +71,10 @@ fun InGameScreen(
                 DailyStatusPanel(
                     modifier = Modifier
                         .height(200.dp),
-                    day = 1,
-                    survivor = 12,
-                    attacked = 4,
-                    killed = 4
+                    day = state.day,
+                    survivor = state.survivor,
+                    attacked = state.attacked,
+                    killed = state.killed
                 )
             }
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
