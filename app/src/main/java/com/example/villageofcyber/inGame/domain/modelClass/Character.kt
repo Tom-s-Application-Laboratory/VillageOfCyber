@@ -19,6 +19,7 @@ enum class SurviveStatus {
 }
 
 data class Character(
+    var isTalkingNow: Boolean = false,
     val name: String,
 
     val miniFace: Int,

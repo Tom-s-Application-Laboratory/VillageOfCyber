@@ -603,6 +603,7 @@ class CharacterDataSourceImpl : CharacterDataSource {
     )
 
     override fun getCharacterInformation(): List<CharacterDto> {
+
         val characterInformation: MutableList<CharacterDto> = mutableListOf()
 
         repeat(times = 16) { index ->
@@ -623,12 +624,19 @@ class CharacterDataSourceImpl : CharacterDataSource {
         return characterInformation
     }
 
-    override fun getShuffledRoles(): List<Role> {
-        return role.shuffled()
+    override fun getRoles(): List<Role> {
+        return role
     }
 
-    override fun getFakeRole(): Role {
-        return fakeRoleSet[fakeRoleSet.indices.random()]
+    /////////////////
+//    override fun getShuffledRoles(): List<Role> {
+//        return role.shuffled()
+//    }
+//
+    /////////////////
+
+    override fun getFakeRoles(): List<Role> {
+        return fakeRoleSet
     }
 
     override fun getRoleStickers(): Map<Role, List<Int>> {

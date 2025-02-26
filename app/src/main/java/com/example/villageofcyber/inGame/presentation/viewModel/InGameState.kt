@@ -9,7 +9,6 @@ data class InGameState(
     val visibleSpeakingSpot: Boolean = false,
     val characterFaceWhoIsSpeaking: Int? = null,
     val messageFromSpeaker: String = "",
-    val nextMessage: Boolean = false,
     val isTalkingNow: Boolean = false,
 
     val visibleCommandMenu: Boolean = false,
@@ -25,6 +24,7 @@ data class InGameState(
     val characterPortraitIds: List<Int> = emptyList(),
     val roleStickerMap: Map<Int, Int> = emptyMap(),
 
+    val characters: List<Character> = emptyList(),
     val coworkerPlace: List<Character> = emptyList(),
     val wolfTeamPlace: List<Character> = emptyList(),
 
