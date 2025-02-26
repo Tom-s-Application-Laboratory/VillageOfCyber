@@ -45,4 +45,8 @@ class CharacterRepositoryImpl(
 
         return characters
     }
+
+    override fun getRoleStickers(): Map<Role, List<Int>> {
+        return dataSource.getRoleStickers()
+    }
 }

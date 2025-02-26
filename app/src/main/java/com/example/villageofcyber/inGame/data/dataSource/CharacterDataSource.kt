@@ -7,4 +7,5 @@ interface CharacterDataSource {
     fun getCharacterInformation(): List<CharacterDto>
     fun getShuffledRoles(): List<Role>
     fun getFakeRole(): Role
+    fun getRoleStickers(): Map<Role, List<Int>>
 }

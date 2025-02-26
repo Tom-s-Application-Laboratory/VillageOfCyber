@@ -5,6 +5,8 @@ import com.example.villageofcyber.inGame.data.dataSource.CharacterDataSourceImpl
 import com.example.villageofcyber.inGame.data.repository.CharacterRepositoryImpl
 import com.example.villageofcyber.inGame.domain.useCase.GetCharacterWhoHasFirstBloodUseCase
 import com.example.villageofcyber.inGame.domain.useCase.GetCharacterMiniFacesUseCase
+import com.example.villageofcyber.inGame.domain.useCase.GetCoworkersUseCase
+import com.example.villageofcyber.inGame.domain.useCase.GetWolfTeamUseCase
 import com.example.villageofcyber.inGame.domain.useCase.UpdateCharacterMiniFacesUseCase
 
 class AppApplication: Application() {
@@ -17,4 +19,6 @@ class AppApplication: Application() {
     val getCharacterMiniFacesUseCase by lazy { GetCharacterMiniFacesUseCase() }
     val getCharacterWhoHasFirstBloodUseCase by lazy { GetCharacterWhoHasFirstBloodUseCase() }
     val updateCharacterMiniFacesUseCase by lazy { UpdateCharacterMiniFacesUseCase() }
+    val getCoworkersUseCase by lazy { GetCoworkersUseCase() }
+    val getWolfTeamUseCase by lazy { GetWolfTeamUseCase() }
 }

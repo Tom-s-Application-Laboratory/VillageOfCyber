@@ -32,7 +32,7 @@ data class Character(
     val role: Role,
     val fakeRole: Role,
 
-    val roleSticker: Int?,
+    var roleSticker: Int?,
     val factionBadge: MutableList<Int>,
 
     val dialogueComingOutFirst: String = "",

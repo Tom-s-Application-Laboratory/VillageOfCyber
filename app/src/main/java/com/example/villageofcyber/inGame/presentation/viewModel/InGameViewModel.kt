@@ -1,6 +1,5 @@
 package com.example.villageofcyber.inGame.presentation.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -11,16 +10,16 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.villageofcyber.core.application.AppApplication
 import com.example.villageofcyber.inGame.domain.repository.CharacterRepository
 import com.example.villageofcyber.inGame.domain.modelClass.Character
+import com.example.villageofcyber.inGame.domain.modelClass.Role
 import com.example.villageofcyber.inGame.domain.modelClass.SurviveStatus
 import com.example.villageofcyber.inGame.domain.useCase.GetCharacterWhoHasFirstBloodUseCase
 import com.example.villageofcyber.inGame.domain.useCase.GetCharacterMiniFacesUseCase
+import com.example.villageofcyber.inGame.domain.useCase.GetCoworkersUseCase
+import com.example.villageofcyber.inGame.domain.useCase.GetWolfTeamUseCase
 import com.example.villageofcyber.inGame.domain.useCase.UpdateCharacterMiniFacesUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,19 +27,33 @@ class InGameViewModel(
     private val repository: CharacterRepository,
     private val getCharacterMiniFacesUseCase: GetCharacterMiniFacesUseCase,
     private val getCharacterWhoHasFirstBloodUseCase: GetCharacterWhoHasFirstBloodUseCase,
-    private val updateCharacterMiniFacesUseCase: UpdateCharacterMiniFacesUseCase
+    private val updateCharacterMiniFacesUseCase: UpdateCharacterMiniFacesUseCase,
+    private val getCoworkersUseCase: GetCoworkersUseCase,
+    private val getWolfTeamUseCase: GetWolfTeamUseCase
 ): ViewModel() {
     private var _state = MutableStateFlow(InGameState())
     val state = _state.asStateFlow()
 
     private val characters: List<Character> = repository.getInitializedCharacters()
+    private var countOfComingOutProphet = 0
+    private var countOfComingOutTraitor = 0
+
+    private val roleStickerMap: MutableMap<Int, Int> = mutableMapOf()
+    private val roleStickers: Map<Role, List<Int>> = repository.getRoleStickers()
+    private var deadCoworker: Int = 0
+    private var talked: Int = 0
 
     init {
         val characterPortraitIds: List<Int> = getCharacterMiniFacesUseCase.execute(characters)
+        val coworkerPlace: List<Character> = getCoworkersUseCase.execute(characters)
+        val wolfTeamPlace: List<Character> = getWolfTeamUseCase.execute(characters)
+
 
         _state.update {
             it.copy(
                 characterPortraitIds = characterPortraitIds,
+                coworkerPlace = coworkerPlace,
+                wolfTeamPlace = wolfTeamPlace,
                 day = 1,
                 survivor = 16,
                 attacked = 0,
@@ -56,6 +69,61 @@ class InGameViewModel(
             InGameAction.OperateBlackPanel -> operateBlackPanel()
             InGameAction.OnClickNextSpeaking -> turnOnNextMessageToggle()
             InGameAction.AnnounceFirstBlood -> announceFirstBlood()
+            InGameAction.OnClickComingOutCoworker -> comingOutCoworker(characters)
+        }
+    }
+
+    private fun comingOutCoworker(characters: List<Character>) {
+        _state.update {
+            it.copy(
+                comingOutCoworkerSituation = true
+            )
+        }
+        _state.update {
+            it.copy(
+                visibleCommandMenu = false,
+                visibleNoticeBoard = true,
+                visibleSpeakingSpot = true
+            )
+        }
+
+        if(_state.value.hasDisclosedCoworker) {
+            printTextWithTypingEffectOnNoticeBoard(text = "아무도 대답하지 않았다...")
+            _state.update {
+                it.copy(
+                    comingOutCoworkerSituation = false
+                )
+            }
+            return
+        }
+
+    }
+
+    private fun printTextWithTypingEffectOnNoticeBoard(text: String) {
+        _state.update {
+            it.copy(
+                isTalkingNow = true
+            )
+        }
+
+        viewModelScope.launch {
+            val textArray = text.toCharArray()
+            val buildingText: StringBuffer = StringBuffer()
+
+            repeat(textArray.size) { index ->
+                _state.update {
+                    it.copy(
+                        messageToNoticeBoard = buildingText.append(textArray[index]).toString()
+                    )
+                }
+                delay(timeMillis = 100)
+            }
+
+            _state.update {
+                it.copy(
+                    isTalkingNow = false
+                )
+            }
         }
     }
 
@@ -68,7 +136,7 @@ class InGameViewModel(
                 characterFaceWhoIsSpeaking = who.bigFace,
             )
         }
-        printTextWithTypingEffect(text = "어젯밤 ${who.name}님이...")
+        printTextWithTypingEffectOnSpeakingSpot(text = "어젯밤 ${who.name}님이...")
 
         viewModelScope.launch {
             while(true) {
@@ -76,11 +144,10 @@ class InGameViewModel(
                     _state.update {
                         it.copy(
                             characterFaceWhoIsSpeaking = who.bigDeadFace,
-                            // messageFromSpeaker = "늑대에게 습격 당했습니다...",
                             nextMessage = false
                         )
                     }
-                    printTextWithTypingEffect(text = "늑대에게 습격 당했습니다...")
+                    printTextWithTypingEffectOnSpeakingSpot(text = "늑대에게 습격 당했습니다...")
                     break
                 }
                 delay(timeMillis = 100)
@@ -106,6 +173,7 @@ class InGameViewModel(
     }
 
     private fun updateCharacterBoard(characters: List<Character>) {
+        // 이 함수 내용들 기능이 둘 이상으로 나뉠 만큼 커지므로 usecase로 구현해 줄 필요가 있어보입니다.
         characters.forEachIndexed { index, character ->
             when(character.alive) {
                 SurviveStatus.ALIVE -> {}
@@ -124,6 +192,25 @@ class InGameViewModel(
                     }
                 }
             }
+
+            if(character.roleSticker != null) {
+                if(character.role == Role.COWORKER) {   // when 구문을 사용하면 Role을 모두 구현을 강제해서 일단은 if else로 처리
+                    roleStickerMap[index] = roleStickers[Role.COWORKER]?.get(0) ?: throw Exception("from updateCharacterBoard")
+                } else if(character.role == Role.PROPHET) {
+                    roleStickerMap[index] = repository.getRoleStickers()[Role.PROPHET]?.get(countOfComingOutProphet) ?: throw Exception("from updateCharacterBoard")
+                    countOfComingOutProphet++
+                } else if(character.role == Role.TRAITOR) {
+                    roleStickerMap[index] = repository.getRoleStickers()[Role.TRAITOR]?.get(countOfComingOutTraitor) ?: throw Exception("from updateCharacterBoard")
+                    countOfComingOutTraitor++
+                } else if(character.role == Role.HUNTER) {
+                    roleStickerMap[index] = repository.getRoleStickers()[Role.HUNTER]?.get(0) ?: throw Exception("from updateCharacterBoard")
+                }
+            }
+        }
+        _state.update {
+            it.copy(
+                roleStickerMap = roleStickerMap
+            )
         }
     }
 
@@ -149,7 +236,7 @@ class InGameViewModel(
         }
     }
 
-    private fun printTextWithTypingEffect(text: String) {
+    private fun printTextWithTypingEffectOnSpeakingSpot(text: String) {
         _state.update {
             it.copy(
                 isTalkingNow = true
@@ -183,6 +270,94 @@ class InGameViewModel(
                 it.copy(
                     nextMessage = true
                 )
+            }
+        }
+
+        if(_state.value.comingOutCoworkerSituation) {
+
+            _state.value.coworkerPlace.forEach { coworker ->
+                if(coworker.alive != SurviveStatus.ALIVE) {
+                    deadCoworker++
+                }
+            }
+
+            when(deadCoworker) {
+                2 -> {
+                    printTextWithTypingEffectOnNoticeBoard(text = "아무도 대답하지 않았다...")
+                }
+                1 -> {
+                    viewModelScope.launch {
+                        _state.value.coworkerPlace.forEach { coworker ->
+                            if(coworker.alive == SurviveStatus.ALIVE) {
+                                _state.update {
+                                    it.copy(
+                                        visibleSpeakingSpot = true,
+                                        characterFaceWhoIsSpeaking = coworker.bigFace,
+                                    )
+                                }
+                                printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutCoworkerAlone)
+                                while(true) {
+                                    if(_state.value.nextMessage) {
+                                        _state.update {
+                                            it.copy(
+                                                visibleSpeakingSpot = false,
+                                                characterFaceWhoIsSpeaking = null,
+                                                messageFromSpeaker = "",
+                                                nextMessage = false
+                                            )
+                                        }
+                                        coworker.roleSticker = roleStickers[Role.COWORKER]?.get(0) ?: throw Exception("from comingOutCoworker")
+                                        updateCharacterBoard(characters)
+                                        break
+                                    }
+                                    delay(timeMillis = 100)
+                                }
+                            }
+                        }
+                    }
+
+                }
+                0 -> {
+                    viewModelScope.launch {
+                        _state.value.coworkerPlace.forEach { coworker ->
+                            _state.update {
+                                it.copy(
+                                    visibleSpeakingSpot = true,
+                                    characterFaceWhoIsSpeaking = coworker.bigFace,
+                                )
+                            }
+
+                            if(talked == 0) {
+                                printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutFirst)
+                            } else {
+                                printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutLast)
+                            }
+
+                            if(_state.value.nextMessage) {
+                                _state.update {
+                                    it.copy(
+                                        visibleSpeakingSpot = false,
+                                        characterFaceWhoIsSpeaking = null,
+                                        messageFromSpeaker = "",
+                                        nextMessage = false
+                                    )
+                                }
+                                talked++
+                                coworker.roleSticker = roleStickers[Role.COWORKER]?.get(0)
+                                    ?: throw Exception("from comingOutCoworker")
+                            }
+                        }
+                    }
+                }
+            }
+            // 업데이트 작성 타이밍
+            if((_state.value.coworkerPlace.size - deadCoworker) <= talked) {
+                _state.update {
+                    it.copy(
+                        comingOutCoworkerSituation = false
+                    )
+                }
+                updateCharacterBoard(characters)
             }
         }
     }
@@ -231,11 +406,16 @@ class InGameViewModel(
                 val getCharacterMiniFacesUseCase = (this[APPLICATION_KEY] as AppApplication).getCharacterMiniFacesUseCase
                 val getCharacterWhoHasFirstBloodUseCase = (this[APPLICATION_KEY] as AppApplication).getCharacterWhoHasFirstBloodUseCase
                 val updateCharacterMiniFacesUseCase = (this[APPLICATION_KEY] as AppApplication).updateCharacterMiniFacesUseCase
+                val getCoworkerIndexesUseCase = (this[APPLICATION_KEY] as AppApplication).getCoworkersUseCase
+                val getWolfTeamIndexesUseCase = (this[APPLICATION_KEY] as AppApplication).getWolfTeamUseCase
+
                 InGameViewModel(
                     repository = characterRepository,
                     getCharacterMiniFacesUseCase = getCharacterMiniFacesUseCase,
                     getCharacterWhoHasFirstBloodUseCase = getCharacterWhoHasFirstBloodUseCase,
-                    updateCharacterMiniFacesUseCase = updateCharacterMiniFacesUseCase
+                    updateCharacterMiniFacesUseCase = updateCharacterMiniFacesUseCase,
+                    getCoworkersUseCase = getCoworkerIndexesUseCase,
+                    getWolfTeamUseCase = getWolfTeamIndexesUseCase
                 )
             }
         }
