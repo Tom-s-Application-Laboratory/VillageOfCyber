@@ -36,6 +36,4 @@ data class InGameState(
     val survivor: Int = -1,
     val attacked: Int = -1,
     val killed: Int = -1,
-
-    val comingOutCoworkerSituation: Boolean = false,
 )

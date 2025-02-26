@@ -40,14 +40,12 @@ class InGameViewModel(
 
     private val roleStickerMap: MutableMap<Int, Int> = mutableMapOf()
     private val roleStickers: Map<Role, List<Int>> = repository.getRoleStickers()
-    private var deadCoworker: Int = 0
-    private var talked: Int = 0
 
     init {
         val characterPortraitIds: List<Int> = getCharacterMiniFacesUseCase.execute(characters)
         val coworkerPlace: List<Character> = getCoworkersUseCase.execute(characters)
+        val coworkerSurviveStatus: MutableList<SurviveStatus> = MutableList(size = coworkerPlace.size) { SurviveStatus.ALIVE }
         val wolfTeamPlace: List<Character> = getWolfTeamUseCase.execute(characters)
-
 
         _state.update {
             it.copy(
@@ -76,26 +74,97 @@ class InGameViewModel(
     private fun comingOutCoworker(characters: List<Character>) {
         _state.update {
             it.copy(
-                comingOutCoworkerSituation = true
-            )
-        }
-        _state.update {
-            it.copy(
                 visibleCommandMenu = false,
-                visibleNoticeBoard = true,
-                visibleSpeakingSpot = true
+                visibleNoticeBoard = true
             )
         }
 
         if(_state.value.hasDisclosedCoworker) {
             printTextWithTypingEffectOnNoticeBoard(text = "아무도 대답하지 않았다...")
-            _state.update {
-                it.copy(
-                    comingOutCoworkerSituation = false
-                )
-            }
             return
         }
+
+        var dead: Int = 0
+
+        _state.value.coworkerPlace.forEach { coworker ->
+            if(coworker.alive != SurviveStatus.ALIVE) {
+                dead++
+            }
+        }
+
+        when(dead) {
+            2 -> {
+                printTextWithTypingEffectOnNoticeBoard(text = "아무도 대답하지 않았다...")
+            }
+            1 -> {
+                viewModelScope.launch {
+                    _state.value.coworkerPlace.forEach { coworker ->
+                        if(coworker.alive == SurviveStatus.ALIVE) {
+                            _state.update {
+                                it.copy(
+                                    visibleSpeakingSpot = true,
+                                    characterFaceWhoIsSpeaking = coworker.bigFace,
+                                )
+                            }
+                            printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutCoworkerAlone)
+                            while(true) {
+                                if(_state.value.nextMessage) {
+                                    _state.update {
+                                        it.copy(
+                                            visibleSpeakingSpot = false,
+                                            characterFaceWhoIsSpeaking = null,
+                                            messageFromSpeaker = "",
+                                            nextMessage = false
+                                        )
+                                    }
+                                    coworker.roleSticker = roleStickers[Role.COWORKER]?.get(0) ?: throw Exception("from comingOutCoworker")
+                                    updateCharacterBoard(characters)
+                                    break
+                                }
+                                delay(timeMillis = 100)
+                            }
+                        }
+                    }
+                }
+
+            }
+            0 -> {
+                viewModelScope.launch {
+                    _state.value.coworkerPlace.forEachIndexed { index, coworker ->
+                        _state.update {
+                            it.copy(
+                                visibleSpeakingSpot = true,
+                                characterFaceWhoIsSpeaking = coworker.bigFace,
+                            )
+                        }
+
+                        if(index == 0) {
+                            printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutFirst)
+                        } else {
+                            printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutLast)
+                        }
+                        while(true) {
+                            if (_state.value.nextMessage) {
+                                _state.update {
+                                    it.copy(
+                                        visibleSpeakingSpot = false,
+                                        characterFaceWhoIsSpeaking = null,
+                                        messageFromSpeaker = "",
+                                        nextMessage = false
+                                    )
+                                }
+                                coworker.roleSticker = roleStickers[Role.COWORKER]?.get(0)
+                                    ?: throw Exception("from comingOutCoworker")
+                                break
+                            }
+                            delay(timeMillis = 5)
+                        }
+                    }
+                    updateCharacterBoard(characters)
+                }
+            }
+        }
+
 
     }
 
@@ -270,94 +339,6 @@ class InGameViewModel(
                 it.copy(
                     nextMessage = true
                 )
-            }
-        }
-
-        if(_state.value.comingOutCoworkerSituation) {
-
-            _state.value.coworkerPlace.forEach { coworker ->
-                if(coworker.alive != SurviveStatus.ALIVE) {
-                    deadCoworker++
-                }
-            }
-
-            when(deadCoworker) {
-                2 -> {
-                    printTextWithTypingEffectOnNoticeBoard(text = "아무도 대답하지 않았다...")
-                }
-                1 -> {
-                    viewModelScope.launch {
-                        _state.value.coworkerPlace.forEach { coworker ->
-                            if(coworker.alive == SurviveStatus.ALIVE) {
-                                _state.update {
-                                    it.copy(
-                                        visibleSpeakingSpot = true,
-                                        characterFaceWhoIsSpeaking = coworker.bigFace,
-                                    )
-                                }
-                                printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutCoworkerAlone)
-                                while(true) {
-                                    if(_state.value.nextMessage) {
-                                        _state.update {
-                                            it.copy(
-                                                visibleSpeakingSpot = false,
-                                                characterFaceWhoIsSpeaking = null,
-                                                messageFromSpeaker = "",
-                                                nextMessage = false
-                                            )
-                                        }
-                                        coworker.roleSticker = roleStickers[Role.COWORKER]?.get(0) ?: throw Exception("from comingOutCoworker")
-                                        updateCharacterBoard(characters)
-                                        break
-                                    }
-                                    delay(timeMillis = 100)
-                                }
-                            }
-                        }
-                    }
-
-                }
-                0 -> {
-                    viewModelScope.launch {
-                        _state.value.coworkerPlace.forEach { coworker ->
-                            _state.update {
-                                it.copy(
-                                    visibleSpeakingSpot = true,
-                                    characterFaceWhoIsSpeaking = coworker.bigFace,
-                                )
-                            }
-
-                            if(talked == 0) {
-                                printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutFirst)
-                            } else {
-                                printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutLast)
-                            }
-
-                            if(_state.value.nextMessage) {
-                                _state.update {
-                                    it.copy(
-                                        visibleSpeakingSpot = false,
-                                        characterFaceWhoIsSpeaking = null,
-                                        messageFromSpeaker = "",
-                                        nextMessage = false
-                                    )
-                                }
-                                talked++
-                                coworker.roleSticker = roleStickers[Role.COWORKER]?.get(0)
-                                    ?: throw Exception("from comingOutCoworker")
-                            }
-                        }
-                    }
-                }
-            }
-            // 업데이트 작성 타이밍
-            if((_state.value.coworkerPlace.size - deadCoworker) <= talked) {
-                _state.update {
-                    it.copy(
-                        comingOutCoworkerSituation = false
-                    )
-                }
-                updateCharacterBoard(characters)
             }
         }
     }
