@@ -15,20 +15,34 @@ class GetInitializedCharactersUseCase(
         return repository.getCharacters()
             .mapIndexed { index, character ->
                 val role = roles[index]
-                val dialogue = dataSource.getCharacterInformation()[index].dialogue[role]
-                character.copy(
-                    role = role,
-                    fakeRole = if (roles[index] == Role.WOLF || roles[index] == Role.BETRAYER)
-                        dataSource.getFakeRoles().random()
-                    else
-                        Role.NONE,
-                    dialogueComingOutFirst = dialogue?.get(0) ?: "",
-                    dialogueComingOutLast = dialogue?.get(1) ?: "",
-                    dialoguePleaseThinkAgain = dialogue?.get(2) ?: "",
-                    dialogueLastComment = dialogue?.get(3) ?: "",
-                    dialogueComingOutCoworkerAlone = if (roles[index] == Role.COWORKER)
-                        dialogue?.get(4) ?: "" else "",
-                )
+                val fakeRole = if (roles[index] == Role.WOLF || roles[index] == Role.BETRAYER)
+                    dataSource.getFakeRoles().random()
+                else
+                    Role.NONE
+
+                val dialogue = if(fakeRole == Role.NONE)
+                    dataSource.getCharacterInformation()[index].dialogue[role]
+                else
+                    dataSource.getCharacterInformation()[index].dialogue[fakeRole]
+
+                if(role != Role.CITIZEN && fakeRole != Role.CITIZEN) {
+                    character.copy(
+                        role = role,
+                        fakeRole = fakeRole,
+                        dialogueComingOutFirst = dialogue?.get(0) ?: "",
+                        dialogueComingOutLast = dialogue?.get(1) ?: "",
+                        dialoguePleaseThinkAgain = dialogue?.get(2) ?: "",
+                        dialogueLastComment = dialogue?.get(3) ?: "",
+                        dialogueComingOutCoworkerAlone = if (roles[index] == Role.COWORKER)
+                            dialogue?.get(4) ?: "" else "",
+                    )
+                } else {
+                    character.copy(
+                        role = role,
+                        fakeRole = fakeRole,
+                        dialogueLastComment = dialogue?.get(0) ?: "",
+                    )
+                }
             }
     }
 }

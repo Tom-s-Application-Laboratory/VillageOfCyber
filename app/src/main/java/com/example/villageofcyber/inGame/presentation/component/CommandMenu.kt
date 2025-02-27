@@ -38,7 +38,7 @@ fun CommandMenu(
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickComingOutProphet)
             }
             ButtonComingOutTraitor(
                 modifier = Modifier

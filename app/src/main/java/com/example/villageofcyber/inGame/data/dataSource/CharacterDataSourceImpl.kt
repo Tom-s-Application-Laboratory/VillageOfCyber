@@ -170,6 +170,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "다른 사람의 말은 믿지 마세요. 제가 진짜 사냥꾼입니다.",
                 "잠시만요, 저 사냥꾼이에요!",
                 "무고한 자가 죽어나가다니..."
+            ),
+            Role.CITIZEN to listOf(
+                "무고한 자가 죽어나가다니..."
             )
         ),
         "용병" to mapOf(
@@ -198,6 +201,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "저 녀석을 처형하면 다시 평화로워지겠군. 사냥꾼은 나니까.",
                 "어이가 없군. 난 사냥꾼이다!",
                 "제기랄, 이런 식으로 나온다 이거지!"
+            ),
+            Role.CITIZEN to listOf(
+                "제기랄, 이런 식으로 나온다 이거지!"
             )
         ),
         "선생" to mapOf(
@@ -224,6 +230,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "사냥꾼을 부르셨나요?",
                 "헛소리를 하시는 군요. 제가 사냥꾼입니다.",
                 "잠시만요, 저 사냥꾼입니다. 다시 한 번 생각해주시죠.",
+                "당신들 실수하시는 겁니다."
+            ),
+            Role.CITIZEN to listOf(
                 "당신들 실수하시는 겁니다."
             )
         ),
@@ -252,6 +261,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "제가 사냥꾼인데...",
                 "저... 사냥꾼인데...",
                 "저... 죽는건가요..."
+            ),
+            Role.CITIZEN to listOf(
+                "저... 죽는건가요..."
             )
         ),
         "가수" to mapOf(
@@ -278,6 +290,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "제가 사냥꾼이에요.",
                 "제가 정말 사냥꾼입니다. 저 분은 가짜에요.",
                 "잠시만요, 저는 사냥꾼이에요!",
+                "정말 후회하실거에요..."
+            ),
+            Role.CITIZEN to listOf(
                 "정말 후회하실거에요..."
             )
         ),
@@ -306,6 +321,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "제가 진짜 사냥꾼이에요.",
                 "저기, 저 사냥꾼인데요...",
                 "저도 곧 따라가게 되었네요..."
+            ),
+            Role.CITIZEN to listOf(
+                "저도 곧 따라가게 되었네요..."
             )
         ),
         "소사" to mapOf(
@@ -332,6 +350,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "사냥꾼을 부르셨나요?",
                 "어라? 사냥꾼이 여러 명이네요? 저도 사냥꾼인데...",
                 "기다려 주세요! 저 사냥꾼이에요!",
+                "저.. 정말 늑대 아니에요... 믿어주세요.."
+            ),
+            Role.CITIZEN to listOf(
                 "저.. 정말 늑대 아니에요... 믿어주세요.."
             )
         ),
@@ -360,6 +381,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "저 놈을 믿는 바보는 없겠지. 내가 사냥꾼이다.",
                 "어이, 뭣하는 짓이냐! 난 사냥꾼이다!",
                 "이것들이 이거 놓지 못 해?!"
+            ),
+            Role.CITIZEN to listOf(
+                "이것들이 이거 놓지 못 해?!"
             )
         ),
         "용자" to mapOf(
@@ -386,6 +410,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "사냥꾼 부르셨나요?",
                 "아무래도 사냥꾼이 한둘이 아닌가보네요. 저도 사냥꾼이거든요.",
                 "뭐하시는 거에요! 저 사냥꾼이에요!",
+                "이거 놓으세요! 전 정말 늑대가 아니라구요!"
+            ),
+            Role.CITIZEN to listOf(
                 "이거 놓으세요! 전 정말 늑대가 아니라구요!"
             )
         ),
@@ -414,6 +441,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "저 분은 뭐하시는 분인지 모르겠지만, 제가 정말 사냥꾼입니다.",
                 "잠깐만요, 저는 사냥꾼입니다!",
                 "말도 안돼..."
+            ),
+            Role.CITIZEN to listOf(
+                "말도 안돼..."
             )
         ),
         "창부" to mapOf(
@@ -440,6 +470,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "사냥꾼 등장!",
                 "뭐야, 그럼 다 같이 사이좋게 사냥꾼 하는거야?",
                 "에~~ 나 사냥꾼인데, 이렇게 보내도 괜찮아?",
+                "뭐야뭐야, 나 죽이려고...?"
+            ),
+            Role.CITIZEN to listOf(
                 "뭐야뭐야, 나 죽이려고...?"
             )
         ),
@@ -468,6 +501,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "앞에 놈은 늑대 무리인가 보군. 내가 사냥꾼이다.",
                 "잠깐, 난 사냥꾼이다.",
                 "늑대가 판치는 구만."
+            ),
+            Role.CITIZEN to listOf(
+                "늑대가 판치는 구만."
             )
         ),
         "촌낭" to mapOf(
@@ -494,6 +530,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "저에요! 저! 사냥꾼은 저에요!",
                 "무슨 소리에요! 사냥꾼은 저라구요!",
                 "사실 나 사냥꾼이야! 아무도 몰랐지?",
+                "사...살려주세요..."
+            ),
+            Role.CITIZEN to listOf(
                 "사...살려주세요..."
             )
         ),
@@ -522,6 +561,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "저 분들은 뭐죠. 사냥꾼은 저에요.",
                 "저기요! 저 사냥꾼이라구요!",
                 "대체 제가 뭘 잘못했다는거죠?"
+            ),
+            Role.CITIZEN to listOf(
+                "대체 제가 뭘 잘못했다는거죠?"
             )
         ),
         "부인" to mapOf(
@@ -549,6 +591,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "앞에 분은 뭐죠? 제가 사냥꾼인데.",
                 "잠깐, 나 사냥꾼이라구요!",
                 "정말 다들 미쳤어요!"
+            ),
+            Role.CITIZEN to listOf(
+                "정말 다들 미쳤어요!"
             )
         ),
         "음악" to mapOf(
@@ -575,6 +620,9 @@ class CharacterDataSourceImpl : CharacterDataSource {
                 "사냥꾼은 접니다.",
                 "저 분이 늑대 무리겠네요. 사냥꾼은 접니다.",
                 "잠깐 기다리시죠. 전 사냥꾼입니다.",
+                "개자식들 아직도 마녀사냥이 팽배하다니..."
+            ),
+            Role.CITIZEN to listOf(
                 "개자식들 아직도 마녀사냥이 팽배하다니..."
             )
         )
