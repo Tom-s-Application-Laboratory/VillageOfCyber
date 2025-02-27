@@ -31,7 +31,7 @@ fun CommandMenu(
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickComingOutCoworker)
             }
             ButtonComingOutProphet(
                 modifier = Modifier

@@ -19,6 +19,7 @@ enum class SurviveStatus {
 }
 
 data class Character(
+    var isTalkingNow: Boolean = false,
     val name: String,
 
     val miniFace: Int,
@@ -32,7 +33,7 @@ data class Character(
     val role: Role,
     val fakeRole: Role,
 
-    val roleSticker: Int?,
+    var roleSticker: Int?,
     val factionBadge: MutableList<Int>,
 
     val dialogueComingOutFirst: String = "",

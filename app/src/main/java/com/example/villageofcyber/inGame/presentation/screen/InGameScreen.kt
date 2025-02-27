@@ -65,7 +65,8 @@ fun InGameScreen(
                     modifier = Modifier
                         .width(260.dp)
                         .height(200.dp),
-                    characterPortraitIds = characterPortraitIds
+                    characterPortraitIds = characterPortraitIds,
+                    roleSticker = state.roleStickerMap
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
                 DailyStatusPanel(
@@ -83,7 +84,7 @@ fun InGameScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(450.dp),
-                    message = "Hello\nwow"
+                    message = state.messageToNoticeBoard
                 )
 
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))

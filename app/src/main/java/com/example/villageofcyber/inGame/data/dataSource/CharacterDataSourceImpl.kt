@@ -580,7 +580,30 @@ class CharacterDataSourceImpl : CharacterDataSource {
         )
     )
 
+    val roleStickerSet: Map<Role, List<Int>> = mapOf(
+        Role.COWORKER to listOf(
+            R.drawable.coworker
+        ),
+        Role.PROPHET to listOf(
+            R.drawable.prophet1,
+            R.drawable.prophet2,
+            R.drawable.prophet3,
+            R.drawable.prophet4,
+            R.drawable.prophet5
+        ),
+        Role.TRAITOR to listOf(
+            R.drawable.traitor1,
+            R.drawable.traitor2,
+            R.drawable.traitor3,
+            R.drawable.traitor4
+        ),
+        Role.HUNTER to listOf(
+            R.drawable.hunter
+        )
+    )
+
     override fun getCharacterInformation(): List<CharacterDto> {
+
         val characterInformation: MutableList<CharacterDto> = mutableListOf()
 
         repeat(times = 16) { index ->
@@ -601,11 +624,22 @@ class CharacterDataSourceImpl : CharacterDataSource {
         return characterInformation
     }
 
-    override fun getShuffledRoles(): List<Role> {
-        return role.shuffled()
+    override fun getRoles(): List<Role> {
+        return role
     }
 
-    override fun getFakeRole(): Role {
-        return fakeRoleSet[fakeRoleSet.indices.random()]
+    /////////////////
+//    override fun getShuffledRoles(): List<Role> {
+//        return role.shuffled()
+//    }
+//
+    /////////////////
+
+    override fun getFakeRoles(): List<Role> {
+        return fakeRoleSet
+    }
+
+    override fun getRoleStickers(): Map<Role, List<Int>> {
+        return roleStickerSet
     }
 }

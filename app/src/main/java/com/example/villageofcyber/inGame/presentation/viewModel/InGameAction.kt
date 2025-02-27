@@ -6,4 +6,5 @@ sealed interface InGameAction {
     data object OperateBlackPanel: InGameAction
     data object OnClickNextSpeaking: InGameAction
     data object AnnounceFirstBlood: InGameAction
+    data object OnClickComingOutCoworker: InGameAction
 }

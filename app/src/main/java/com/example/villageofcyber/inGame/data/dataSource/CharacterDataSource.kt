@@ -5,6 +5,7 @@ import com.example.villageofcyber.inGame.domain.modelClass.Role
 
 interface CharacterDataSource {
     fun getCharacterInformation(): List<CharacterDto>
-    fun getShuffledRoles(): List<Role>
-    fun getFakeRole(): Role
+    fun getRoles(): List<Role>
+    fun getFakeRoles(): List<Role>
+    fun getRoleStickers(): Map<Role, List<Int>>
 }
