@@ -12,12 +12,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.villageofcyber.R
+import com.example.villageofcyber.inGame.presentation.component.BlackPanel
 import com.example.villageofcyber.inGame.presentation.component.ButtonDoVoting
 import com.example.villageofcyber.inGame.presentation.component.ButtonOpenCommandMenu
 import com.example.villageofcyber.inGame.presentation.component.CharacterBoard
@@ -36,8 +40,13 @@ fun InGameScreen(
     characterPortraitIds: List<Int>,
     onAction: (InGameAction) -> Unit = {}
 ) {
+    LaunchedEffect(Unit) {
+        onAction(InGameAction.OperateBlackPanel)
+        onAction(InGameAction.AnnounceFirstBlood)
+    }
+
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         Image(
@@ -48,23 +57,25 @@ fun InGameScreen(
             contentDescription = null
         )
         Column(
-            modifier = modifier
+            modifier = Modifier
+                .matchParentSize()
         ) {
             Row {
                 CharacterBoard(
                     modifier = Modifier
-                        .width(280.dp)
+                        .width(260.dp)
                         .height(200.dp),
-                    characterPortraitIds = characterPortraitIds
+                    characterPortraitIds = characterPortraitIds,
+                    roleSticker = state.roleStickerMap
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
                 DailyStatusPanel(
                     modifier = Modifier
                         .height(200.dp),
-                    day = 1,
-                    survivor = 8,
-                    attacked = 4,
-                    killed = 4
+                    day = state.day,
+                    survivor = state.survivor,
+                    attacked = state.attacked,
+                    killed = state.killed
                 )
             }
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
@@ -72,12 +83,13 @@ fun InGameScreen(
                 NoticeBoard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(500.dp),
-                    message = "Hello\nwow"
+                        .height(450.dp),
+                    message = state.messageToNoticeBoard
                 )
 
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
                 Row(
+                    verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     ButtonOpenCommandMenu(
@@ -100,7 +112,7 @@ fun InGameScreen(
                 CommandMenu(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(500.dp)
+                        .height(450.dp)
                 ) { inGameAction ->
                     onAction(inGameAction)
                 }
@@ -117,11 +129,19 @@ fun InGameScreen(
                 modifier = Modifier
                     .width(350.dp)
                     .height(400.dp),
-                who = R.drawable.brothel,
-                message = "살려주세요."
+                who = state.characterFaceWhoIsSpeaking ?: throw Exception("from InGameScreen. there is no person on speaking spot"),
+                message = state.messageFromSpeaker,
+                onClick = {
+                    onAction(InGameAction.OnClickNextSpeaking)
+                }
             )
         }
     }
+    BlackPanel(
+        modifier = Modifier
+            .fillMaxSize()
+            .alpha(state.transparencyOfBlackPanel)
+    )
 }
 
 @Preview

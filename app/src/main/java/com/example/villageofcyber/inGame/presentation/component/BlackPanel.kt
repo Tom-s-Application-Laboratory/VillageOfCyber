@@ -10,7 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BlackPanel(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier

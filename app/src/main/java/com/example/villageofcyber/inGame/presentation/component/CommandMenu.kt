@@ -31,21 +31,21 @@ fun CommandMenu(
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickComingOutCoworker)
             }
             ButtonComingOutProphet(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickComingOutProphet)
             }
             ButtonComingOutTraitor(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickComingOutTraitor)
             }
         }
         Row(
@@ -58,7 +58,7 @@ fun CommandMenu(
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickComingOutHunter)
             }
             ButtonDirectProphet(
                 modifier = Modifier

@@ -15,22 +15,26 @@ import com.example.villageofcyber.R
 @Composable
 fun CharacterBoard(
     modifier: Modifier = Modifier,
-    characterPortraitIds: List<Int>
+    characterPortraitIds: List<Int>,
+    roleSticker: Map<Int, Int> = emptyMap()
 ) {
     val rows = characterPortraitIds.chunked(8)
+
     Column(
         modifier = modifier
     ) {
-        rows.forEach { row ->
+        rows.forEachIndexed { rowIndex, row ->
             Row(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                row.forEach { portraitId ->
+                row.forEachIndexed { columnIndex, portraitId ->
+                    val portraitPlace = rowIndex * 8 + columnIndex
                     CharacterProfile(
                         modifier = Modifier
                             .weight(1f),
-                        who = portraitId
+                        who = portraitId,
+                        role = if(roleSticker.isNotEmpty() && roleSticker.containsKey(portraitPlace)) roleSticker[portraitPlace] else null
                     )
                 }
             }
@@ -64,6 +68,9 @@ private fun CharacterBoardPreview() {
         modifier = Modifier
             .width(300.dp)
             .height(300.dp),
-        characterPortraitIds = characterPortraitIds
+        characterPortraitIds = characterPortraitIds,
+        roleSticker = mapOf(
+            characterPortraitIds.indexOf(R.drawable.mini_washer) to R.drawable.coworker
+        )
     )
 }
