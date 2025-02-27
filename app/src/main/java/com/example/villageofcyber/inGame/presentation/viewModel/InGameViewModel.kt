@@ -46,18 +46,13 @@ class InGameViewModel(
     private val characters = getInitializedCharactersUseCase.execute()
 
     init {
-
         val characterPortraitIds: List<Int> = getCharacterMiniFacesUseCase.execute(characters)
-        val coworkerPlace: List<Character> = getCoworkersUseCase.execute(characters)
-        val coworkerSurviveStatus: MutableList<SurviveStatus> =
-            MutableList(size = coworkerPlace.size) { SurviveStatus.ALIVE }
-        val wolfTeamPlace: List<Character> = getWolfTeamUseCase.execute(characters)
 
         _state.update {
             it.copy(
                 characters = characters,
                 characterPortraitIds = characterPortraitIds,
-                coworkerPlace = coworkerPlace,
+                coworkerPlace = getCoworkersUseCase.execute(characters),
                 wolfTeamPlace = getWolfTeamUseCase.execute(characters),
                 day = 1,
                 survivor = 16,
@@ -75,13 +70,14 @@ class InGameViewModel(
                 InGameAction.OperateBlackPanel -> operateBlackPanel()
                 InGameAction.OnClickNextSpeaking -> turnOnNextMessageToggle()
                 InGameAction.AnnounceFirstBlood -> announceFirstBlood()
-                InGameAction.OnClickComingOutCoworker -> comingOutCoworker(characters)
+                InGameAction.OnClickComingOutCoworker -> comingOutCoworker()
+                InGameAction.OnClickComingOutProphet -> comingOutProphet()
+                InGameAction.OnClickComingOutTraitor -> comingOutTraitor()
             }
         }
     }
 
-    private suspend fun comingOutCoworker(characters: List<Character>) {
-
+    private suspend fun comingOutCoworker() {
         _state.update {
             it.copy(
                 visibleCommandMenu = false,
@@ -116,50 +112,127 @@ class InGameViewModel(
 
                     coworker.isTalkingNow = true
                     printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutCoworkerAlone)
-
                 }.toList()
 
-
-                handleNextMessage(survivor)
+                handleNextMessage(survivor, Role.COWORKER)
             }
 
             0 -> {
-                viewModelScope.launch {
-                    val survivor = _state.value.coworkerPlace.onEachIndexed { index, coworker ->
-                        _state.update {
-                            it.copy(
-                                visibleSpeakingSpot = true,
-                                characterFaceWhoIsSpeaking = coworker.bigFace,
-                            )
-                        }
-
-                        if (index == 0) {
-                            printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutFirst)
-                        } else {
-                            printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutLast)
-                        }
-
+                val survivor = _state.value.coworkerPlace.onEachIndexed { index, coworker ->
+                    _state.update {
+                        it.copy(
+                            visibleSpeakingSpot = true,
+                            characterFaceWhoIsSpeaking = coworker.bigFace,
+                        )
                     }
-                    handleNextMessage(survivor)
-                    updateCharacterBoard(characters)
+
+                    if (index == 0) {
+                        printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutFirst)
+                    } else {
+                        printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutLast)
+                    }
                 }
+                handleNextMessage(survivor, Role.COWORKER)
             }
+        }
+
+        _state.update {
+            it.copy(
+                hasDisclosedCoworker = true
+            )
         }
     }
 
-    private suspend fun handleNextMessage(
-        coworkers: List<Character>,
-    ) {
-        coworkers.forEach { coworker ->
+    private suspend fun comingOutProphet() {
+        _state.update {
+            it.copy(
+                visibleNoticeBoard = true,
+                visibleCommandMenu = false
+            )
+        }
+
+        if (_state.value.hasDisclosedProphet) {
+            printTextWithTypingEffectOnNoticeBoard(text = "아무도 대답하지 않았다...")
+            return
+        }
+
+        val survivor = characters.filter { character ->
+            (character.role == Role.PROPHET || character.fakeRole == Role.PROPHET) && character.alive == SurviveStatus.ALIVE
+        }.onEachIndexed { index, character ->
             _state.update {
                 it.copy(
-                    visibleSpeakingSpot = false,
-                    characterFaceWhoIsSpeaking = null,
-                    messageFromSpeaker = "",
+                    visibleSpeakingSpot = true,
+                    characterFaceWhoIsSpeaking = character.bigFace
                 )
             }
-            coworker.roleSticker = roleStickers[Role.COWORKER]?.get(0)
-                ?: throw Exception("from comingOutCoworker")
+            if (index == 0) {
+                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutFirst)
+            } else {
+                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutLast)
+            }
+        }
+
+        handleNextMessage(survivor, Role.PROPHET)
+
+        _state.update {
+            it.copy(
+                hasDisclosedProphet = true
+            )
+        }
+    }
+
+    private suspend fun comingOutTraitor() {
+        _state.update {
+            it.copy(
+                visibleNoticeBoard = true,
+                visibleCommandMenu = false
+            )
+        }
+
+        if (_state.value.hasDisclosedTraitor) {
+            printTextWithTypingEffectOnNoticeBoard(text = "아무도 대답하지 않았다...")
+            return
+        }
+
+        val survivor = characters.filter { character ->
+            (character.role == Role.TRAITOR || character.fakeRole == Role.TRAITOR) && character.alive == SurviveStatus.ALIVE
+        }.onEachIndexed { index, character ->
+            _state.update {
+                it.copy(
+                    visibleSpeakingSpot = true,
+                    characterFaceWhoIsSpeaking = character.bigFace
+                )
+            }
+            if (index == 0) {
+                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutFirst)
+            } else {
+                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutLast)
+            }
+        }
+
+        handleNextMessage(survivor, Role.TRAITOR)
+
+        _state.update {
+            it.copy(
+                hasDisclosedTraitor = true
+            )
+        }
+    }
+
+    private fun handleNextMessage(
+        disclosedCharacter: List<Character>,
+        role: Role
+    ) {
+        _state.update {
+            it.copy(
+                visibleSpeakingSpot = false,
+                characterFaceWhoIsSpeaking = null,
+                messageFromSpeaker = "",
+            )
+        }
+        disclosedCharacter.forEach { character ->
+            character.roleSticker = roleStickers[role]?.get(0)
+                ?: throw Exception("from handleNextMessage")
         }
         updateCharacterBoard(characters)
     }
@@ -229,7 +302,6 @@ class InGameViewModel(
         }
         who.alive = SurviveStatus.ATTACKED
 
-
         updateCharacterBoard(characters)
         updateDailyStatusPanel(characters)
 
@@ -262,15 +334,18 @@ class InGameViewModel(
             }
 
             if (character.roleSticker != null) {
-                if (character.role == Role.COWORKER) {   // when 구문을 사용하면 Role을 모두 구현을 강제해서 일단은 if else로 처리
+                if (character.role == Role.COWORKER && !_state.value.hasDisclosedCoworker) {   // when 구문을 사용하면 Role을 모두 구현을 강제해서 일단은 if else로 처리
                     roleStickerMap[index] = roleStickers[Role.COWORKER]?.get(0)
                         ?: throw Exception("from updateCharacterBoard")
-                } else if (character.role == Role.PROPHET) {
+                } else if ((character.role == Role.PROPHET || character.fakeRole == Role.PROPHET)
+                    && !_state.value.hasDisclosedProphet
+                ) {
                     roleStickerMap[index] =
                         repository.getRoleStickers()[Role.PROPHET]?.get(countOfComingOutProphet)
                             ?: throw Exception("from updateCharacterBoard")
                     countOfComingOutProphet++
-                } else if (character.role == Role.TRAITOR) {
+                } else if ((character.role == Role.TRAITOR || character.fakeRole == Role.TRAITOR)
+                    && !_state.value.hasDisclosedTraitor) {
                     roleStickerMap[index] =
                         repository.getRoleStickers()[Role.TRAITOR]?.get(countOfComingOutTraitor)
                             ?: throw Exception("from updateCharacterBoard")
@@ -351,7 +426,6 @@ class InGameViewModel(
 //                }
 //            }
 //        }
-
     }
 
     private fun closeCommandMenu() {
