@@ -58,7 +58,7 @@ fun CommandMenu(
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickComingOutHunter)
             }
             ButtonDirectProphet(
                 modifier = Modifier

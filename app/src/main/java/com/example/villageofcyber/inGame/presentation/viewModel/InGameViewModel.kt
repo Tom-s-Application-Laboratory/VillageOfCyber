@@ -73,6 +73,7 @@ class InGameViewModel(
                 InGameAction.OnClickComingOutCoworker -> comingOutCoworker()
                 InGameAction.OnClickComingOutProphet -> comingOutProphet()
                 InGameAction.OnClickComingOutTraitor -> comingOutTraitor()
+                InGameAction.OnClickComingOutHunter -> comingOutHunter()
             }
         }
     }
@@ -219,6 +220,44 @@ class InGameViewModel(
         }
     }
 
+    private suspend fun comingOutHunter() {
+        _state.update {
+            it.copy(
+                visibleNoticeBoard = true,
+                visibleCommandMenu = false
+            )
+        }
+
+        if (_state.value.hasDisclosedHunter) {
+            printTextWithTypingEffectOnNoticeBoard(text = "아무도 대답하지 않았다...")
+            return
+        }
+
+        val survivor = characters.filter { character ->
+            (character.role == Role.HUNTER || character.fakeRole == Role.HUNTER) && character.alive == SurviveStatus.ALIVE
+        }.onEachIndexed { index, character ->
+            _state.update {
+                it.copy(
+                    visibleSpeakingSpot = true,
+                    characterFaceWhoIsSpeaking = character.bigFace
+                )
+            }
+            if (index == 0) {
+                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutFirst)
+            } else {
+                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutLast)
+            }
+        }
+
+        handleNextMessage(survivor, Role.HUNTER)
+
+        _state.update {
+            it.copy(
+                hasDisclosedHunter = true
+            )
+        }
+    }
+
     private fun handleNextMessage(
         disclosedCharacter: List<Character>,
         role: Role
@@ -350,7 +389,8 @@ class InGameViewModel(
                         repository.getRoleStickers()[Role.TRAITOR]?.get(countOfComingOutTraitor)
                             ?: throw Exception("from updateCharacterBoard")
                     countOfComingOutTraitor++
-                } else if (character.role == Role.HUNTER) {
+                } else if ((character.role == Role.HUNTER || character.fakeRole == Role.HUNTER)
+                    && !_state.value.hasDisclosedHunter) {
                     roleStickerMap[index] = repository.getRoleStickers()[Role.HUNTER]?.get(0)
                         ?: throw Exception("from updateCharacterBoard")
                 }
