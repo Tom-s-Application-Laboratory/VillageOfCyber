@@ -8,4 +8,5 @@ sealed interface InGameAction {
     data object AnnounceFirstBlood: InGameAction
     data object OnClickComingOutCoworker: InGameAction
     data object OnClickComingOutProphet: InGameAction
+    data object OnClickComingOutTraitor: InGameAction
 }

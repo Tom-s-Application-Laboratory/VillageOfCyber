@@ -70,13 +70,14 @@ class InGameViewModel(
                 InGameAction.OperateBlackPanel -> operateBlackPanel()
                 InGameAction.OnClickNextSpeaking -> turnOnNextMessageToggle()
                 InGameAction.AnnounceFirstBlood -> announceFirstBlood()
-                InGameAction.OnClickComingOutCoworker -> comingOutCoworker(characters)
-                InGameAction.OnClickComingOutProphet -> comingOutProphet(characters)
+                InGameAction.OnClickComingOutCoworker -> comingOutCoworker()
+                InGameAction.OnClickComingOutProphet -> comingOutProphet()
+                InGameAction.OnClickComingOutTraitor -> comingOutTraitor()
             }
         }
     }
 
-    private suspend fun comingOutCoworker(characters: List<Character>) {
+    private suspend fun comingOutCoworker() {
         _state.update {
             it.copy(
                 visibleCommandMenu = false,
@@ -142,7 +143,7 @@ class InGameViewModel(
         }
     }
 
-    private suspend fun comingOutProphet(characters: List<Character>) {
+    private suspend fun comingOutProphet() {
         _state.update {
             it.copy(
                 visibleNoticeBoard = true,
@@ -176,6 +177,44 @@ class InGameViewModel(
         _state.update {
             it.copy(
                 hasDisclosedProphet = true
+            )
+        }
+    }
+
+    private suspend fun comingOutTraitor() {
+        _state.update {
+            it.copy(
+                visibleNoticeBoard = true,
+                visibleCommandMenu = false
+            )
+        }
+
+        if (_state.value.hasDisclosedTraitor) {
+            printTextWithTypingEffectOnNoticeBoard(text = "아무도 대답하지 않았다...")
+            return
+        }
+
+        val survivor = characters.filter { character ->
+            (character.role == Role.TRAITOR || character.fakeRole == Role.TRAITOR) && character.alive == SurviveStatus.ALIVE
+        }.onEachIndexed { index, character ->
+            _state.update {
+                it.copy(
+                    visibleSpeakingSpot = true,
+                    characterFaceWhoIsSpeaking = character.bigFace
+                )
+            }
+            if (index == 0) {
+                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutFirst)
+            } else {
+                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutLast)
+            }
+        }
+
+        handleNextMessage(survivor, Role.TRAITOR)
+
+        _state.update {
+            it.copy(
+                hasDisclosedTraitor = true
             )
         }
     }
@@ -305,7 +344,8 @@ class InGameViewModel(
                         repository.getRoleStickers()[Role.PROPHET]?.get(countOfComingOutProphet)
                             ?: throw Exception("from updateCharacterBoard")
                     countOfComingOutProphet++
-                } else if (character.role == Role.TRAITOR) {
+                } else if ((character.role == Role.TRAITOR || character.fakeRole == Role.TRAITOR)
+                    && !_state.value.hasDisclosedTraitor) {
                     roleStickerMap[index] =
                         repository.getRoleStickers()[Role.TRAITOR]?.get(countOfComingOutTraitor)
                             ?: throw Exception("from updateCharacterBoard")
