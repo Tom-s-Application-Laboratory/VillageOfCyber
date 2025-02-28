@@ -25,6 +25,9 @@ class GetInitializedCharactersUseCase(
                 else
                     dataSource.getCharacterInformation()[index].dialogue[fakeRole]
 
+                val roleHistory: MutableList<Pair<String, Boolean>>? = if(role == Role.PROPHET || role == Role.TRAITOR || role == Role.HUNTER
+                    || fakeRole == Role.PROPHET || fakeRole == Role.TRAITOR || fakeRole == Role.HUNTER) mutableListOf() else null
+
                 if(role != Role.CITIZEN && fakeRole != Role.CITIZEN) {
                     character.copy(
                         role = role,
@@ -33,8 +36,12 @@ class GetInitializedCharactersUseCase(
                         dialogueComingOutLast = dialogue?.get(1) ?: "",
                         dialoguePleaseThinkAgain = dialogue?.get(2) ?: "",
                         dialogueLastComment = dialogue?.get(3) ?: "",
-                        dialogueComingOutCoworkerAlone = if (roles[index] == Role.COWORKER)
+                        dialogueComingOutCoworkerAlone = if (role == Role.COWORKER)
                             dialogue?.get(4) ?: "" else "",
+                        prophetRoleHistory = if(role == Role.PROPHET || fakeRole == Role.PROPHET) roleHistory else null,
+                        traitorRoleHistory = if(role == Role.TRAITOR || fakeRole == Role.TRAITOR) roleHistory else null,
+                        hunterRoleHistory =  if(role == Role.HUNTER || fakeRole == Role.HUNTER) roleHistory else null,
+                        cursorOfHistory = if(roleHistory != null) 0 else -1
                     )
                 } else {
                     character.copy(

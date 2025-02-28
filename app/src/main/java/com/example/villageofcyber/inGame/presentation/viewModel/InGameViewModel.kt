@@ -78,6 +78,61 @@ class InGameViewModel(
         }
     }
 
+    private fun playEachRole(direct: Int) {
+        val prophetSurvivor = characters.filter { character ->
+            character.alive == SurviveStatus.ALIVE && (character.role == Role.PROPHET || character.fakeRole == Role.PROPHET)
+        }
+
+        prophetSurvivor.onEach { prophet ->
+            val target = if (direct == -1) characters.filter { character ->
+                character.alive == SurviveStatus.ALIVE &&
+                        character.name != prophet.name &&
+                        !prophet.prophetRoleHistory!!.any { it.first == character.name }
+            }.random() else characters[direct]
+
+            if (target.role == Role.WOLF) {
+                prophet.prophetRoleHistory?.add(Pair<String, Boolean>(target.name, true))
+            } else {
+                prophet.prophetRoleHistory?.add(Pair<String, Boolean>(target.name, false))
+            }
+        }
+
+        val traitorSurvivor = characters.filter { character ->
+            character.alive == SurviveStatus.ALIVE && (character.role == Role.TRAITOR || character.fakeRole == Role.TRAITOR)
+        }
+
+        traitorSurvivor.onEach { traitor ->
+            val target = if (direct == -1) characters.filter { character ->
+                character.alive == SurviveStatus.KILLED &&
+                        !traitor.traitorRoleHistory!!.any { it.first == character.name }
+            }.random() else characters[direct]
+
+            if (target.role == Role.WOLF) {
+                traitor.traitorRoleHistory?.add(Pair<String, Boolean>(target.name, true))
+            } else {
+                traitor.traitorRoleHistory?.add(Pair<String, Boolean>(target.name, false))
+            }
+        }
+
+        val hunterSurvivor = characters.filter { character ->
+            character.alive == SurviveStatus.ALIVE && (character.role == Role.HUNTER || character.fakeRole == Role.HUNTER)
+        }
+
+        hunterSurvivor.onEach { hunter ->
+            val target = if (direct == -1) characters.filter { character ->
+                character.alive == SurviveStatus.ALIVE &&
+                        character.name != hunter.name &&
+                        !hunter.hunterRoleHistory!!.any { it.first == character.name }
+            }.random() else characters[direct]
+
+            if (target.role == Role.WOLF) {
+                hunter.hunterRoleHistory?.add(Pair<String, Boolean>(target.name, true))
+            } else {
+                hunter.hunterRoleHistory?.add(Pair<String, Boolean>(target.name, false))
+            }
+        }
+    }
+
     private suspend fun comingOutCoworker() {
         _state.update {
             it.copy(
@@ -384,13 +439,15 @@ class InGameViewModel(
                             ?: throw Exception("from updateCharacterBoard")
                     countOfComingOutProphet++
                 } else if ((character.role == Role.TRAITOR || character.fakeRole == Role.TRAITOR)
-                    && !_state.value.hasDisclosedTraitor) {
+                    && !_state.value.hasDisclosedTraitor
+                ) {
                     roleStickerMap[index] =
                         repository.getRoleStickers()[Role.TRAITOR]?.get(countOfComingOutTraitor)
                             ?: throw Exception("from updateCharacterBoard")
                     countOfComingOutTraitor++
                 } else if ((character.role == Role.HUNTER || character.fakeRole == Role.HUNTER)
-                    && !_state.value.hasDisclosedHunter) {
+                    && !_state.value.hasDisclosedHunter
+                ) {
                     roleStickerMap[index] = repository.getRoleStickers()[Role.HUNTER]?.get(0)
                         ?: throw Exception("from updateCharacterBoard")
                 }
