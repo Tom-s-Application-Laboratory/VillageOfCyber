@@ -21,7 +21,7 @@ import com.example.villageofcyber.R
 @Composable
 fun SpeechPanel(
     modifier: Modifier = Modifier,
-    message: String = ""
+    message: Pair<String, String> = Pair("", "")
 ) {
     BoxWithConstraints(
         modifier = modifier
@@ -38,8 +38,16 @@ fun SpeechPanel(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(start = 10.dp),
+            text = message.first,
+            color = Color.White,
+            fontSize = (maxHeight * 0.15f).value.sp
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = maxHeight * 0.22f),
-            text = message,
+            text = message.second,
             color = Color.White,
             fontSize = (maxHeight * 0.15f).value.sp
         )
@@ -53,6 +61,6 @@ private fun SpeechPanelPreview() {
         modifier = Modifier
             .width(200.dp)
             .height(80.dp),
-        message = "살려주세요."
+        message = Pair("아리스", "살려주세요.")
     )
 }

@@ -82,7 +82,7 @@ class InGameViewModel(
         _state.update {
             it.copy(
                 visibleCommandMenu = false,
-                visibleNoticeBoard = true
+                visibleNoticeBoard = false
             )
         }
 
@@ -107,12 +107,15 @@ class InGameViewModel(
                     _state.update {
                         it.copy(
                             visibleSpeakingSpot = true,
-                            characterFaceWhoIsSpeaking = coworker.bigFace,
+                            characterFaceWhoIsSpeaking = listOf(
+                                coworker.bigFace
+                            ),
+                            headCounter = 1
                         )
                     }
 
                     coworker.isTalkingNow = true
-                    printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutCoworkerAlone)
+                    printTextWithTypingEffectOnSpeakingSpot(name = coworker.name, text = coworker.dialogueComingOutCoworkerAlone)
                 }.toList()
 
                 handleNextMessage(survivor, Role.COWORKER)
@@ -123,14 +126,17 @@ class InGameViewModel(
                     _state.update {
                         it.copy(
                             visibleSpeakingSpot = true,
-                            characterFaceWhoIsSpeaking = coworker.bigFace,
+                            characterFaceWhoIsSpeaking = listOf(
+                                coworker.bigFace
+                            ),
+                            headCounter = 1
                         )
                     }
 
                     if (index == 0) {
-                        printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutFirst)
+                        printTextWithTypingEffectOnSpeakingSpot(name = coworker.name, text = coworker.dialogueComingOutFirst)
                     } else {
-                        printTextWithTypingEffectOnSpeakingSpot(text = coworker.dialogueComingOutLast)
+                        printTextWithTypingEffectOnSpeakingSpot(name = coworker.name, text = coworker.dialogueComingOutLast)
                     }
                 }
                 handleNextMessage(survivor, Role.COWORKER)
@@ -147,7 +153,7 @@ class InGameViewModel(
     private suspend fun comingOutProphet() {
         _state.update {
             it.copy(
-                visibleNoticeBoard = true,
+                visibleNoticeBoard = false,
                 visibleCommandMenu = false
             )
         }
@@ -163,13 +169,16 @@ class InGameViewModel(
             _state.update {
                 it.copy(
                     visibleSpeakingSpot = true,
-                    characterFaceWhoIsSpeaking = character.bigFace
+                    characterFaceWhoIsSpeaking = listOf(
+                        character.bigFace
+                    ),
+                    headCounter = 1
                 )
             }
             if (index == 0) {
-                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutFirst)
+                printTextWithTypingEffectOnSpeakingSpot(name = character.name, text = character.dialogueComingOutFirst)
             } else {
-                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutLast)
+                printTextWithTypingEffectOnSpeakingSpot(name = character.name, text = character.dialogueComingOutLast)
             }
         }
 
@@ -185,7 +194,7 @@ class InGameViewModel(
     private suspend fun comingOutTraitor() {
         _state.update {
             it.copy(
-                visibleNoticeBoard = true,
+                visibleNoticeBoard = false,
                 visibleCommandMenu = false
             )
         }
@@ -201,13 +210,16 @@ class InGameViewModel(
             _state.update {
                 it.copy(
                     visibleSpeakingSpot = true,
-                    characterFaceWhoIsSpeaking = character.bigFace
+                    characterFaceWhoIsSpeaking = listOf(
+                        character.bigFace
+                    ),
+                    headCounter = 1
                 )
             }
             if (index == 0) {
-                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutFirst)
+                printTextWithTypingEffectOnSpeakingSpot(name = character.name, text = character.dialogueComingOutFirst)
             } else {
-                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutLast)
+                printTextWithTypingEffectOnSpeakingSpot(name = character.name, text = character.dialogueComingOutLast)
             }
         }
 
@@ -223,7 +235,7 @@ class InGameViewModel(
     private suspend fun comingOutHunter() {
         _state.update {
             it.copy(
-                visibleNoticeBoard = true,
+                visibleNoticeBoard = false,
                 visibleCommandMenu = false
             )
         }
@@ -239,13 +251,16 @@ class InGameViewModel(
             _state.update {
                 it.copy(
                     visibleSpeakingSpot = true,
-                    characterFaceWhoIsSpeaking = character.bigFace
+                    characterFaceWhoIsSpeaking = listOf(
+                        character.bigFace
+                    ),
+                    headCounter = 1
                 )
             }
             if (index == 0) {
-                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutFirst)
+                printTextWithTypingEffectOnSpeakingSpot(name = character.name, text = character.dialogueComingOutFirst)
             } else {
-                printTextWithTypingEffectOnSpeakingSpot(character.dialogueComingOutLast)
+                printTextWithTypingEffectOnSpeakingSpot(name = character.name, text = character.dialogueComingOutLast)
             }
         }
 
@@ -264,9 +279,13 @@ class InGameViewModel(
     ) {
         _state.update {
             it.copy(
+                visibleNoticeBoard = true,
+                visibleNoticeSpot = false,
                 visibleSpeakingSpot = false,
-                characterFaceWhoIsSpeaking = null,
-                messageFromSpeaker = "",
+                characterFaceWhoIsNotified = null,
+                messageFromWorld = "",
+                messageFromSpeaker = Pair("", ""),
+                headCounter = 0
             )
         }
         disclosedCharacter.forEach { character ->
@@ -279,7 +298,7 @@ class InGameViewModel(
     private suspend fun printTextWithTypingEffectOnNoticeBoard(text: String) {
         _state.update {
             it.copy(
-                isTalkingNow = true
+                isNotifyingNow = true
             )
         }
 
@@ -297,7 +316,7 @@ class InGameViewModel(
 
         _state.update {
             it.copy(
-                isTalkingNow = false
+                isNotifyingNow = false
             )
         }
     }
@@ -319,24 +338,26 @@ class InGameViewModel(
 
         _state.update {
             it.copy(
-                visibleSpeakingSpot = true,
-                characterFaceWhoIsSpeaking = who.bigFace,
+                visibleNoticeSpot = true,
+                visibleNoticeBoard = false,
+                characterFaceWhoIsNotified = who.bigFace,
             )
         }
-        printTextWithTypingEffectOnSpeakingSpot(text = "어젯밤 ${who.name}님이...")
+        printTextWithTypingEffectOnNoticeSpot(text = "어젯밤 ${who.name}님이...")
 
         _state.update {
             it.copy(
-                characterFaceWhoIsSpeaking = who.bigDeadFace,
+                characterFaceWhoIsNotified = who.bigDeadFace,
             )
         }
-        printTextWithTypingEffectOnSpeakingSpot(text = "늑대에게 습격 당했습니다...")
+        printTextWithTypingEffectOnNoticeSpot(text = "늑대에게 습격 당했습니다...")
 
         _state.update {
             it.copy(
-                visibleSpeakingSpot = false,
-                characterFaceWhoIsSpeaking = null,
-                messageFromSpeaker = "",
+                visibleNoticeSpot = false,
+                visibleNoticeBoard = true,
+                characterFaceWhoIsNotified = null,
+                messageFromWorld = "",
             )
         }
         who.alive = SurviveStatus.ATTACKED
@@ -425,7 +446,7 @@ class InGameViewModel(
         }
     }
 
-    private suspend fun printTextWithTypingEffectOnSpeakingSpot(
+    private suspend fun printTextWithTypingEffectOnNoticeSpot(
         text: String,
     ) {
 
@@ -435,7 +456,7 @@ class InGameViewModel(
         repeat(textArray.size) { index ->
             _state.update {
                 it.copy(
-                    messageFromSpeaker = buildingText.append(textArray[index]).toString()
+                    messageFromWorld = buildingText.append(textArray[index]).toString()
                 )
             }
             delay(timeMillis = 100)
@@ -443,7 +464,33 @@ class InGameViewModel(
 
         _state.update {
             it.copy(
-                isTalkingNow = false
+                isNotifyingNow = false
+            )
+        }
+
+        waitForUserClick()
+    }
+
+    private suspend fun printTextWithTypingEffectOnSpeakingSpot(
+        name: String,
+        text: String,
+    ) {
+
+        val textArray = text.toCharArray()
+        val buildingText: StringBuffer = StringBuffer()
+
+        repeat(textArray.size) { index ->
+            _state.update {
+                it.copy(
+                    messageFromSpeaker = Pair<String, String>(name, buildingText.append(textArray[index]).toString())
+                )
+            }
+            delay(timeMillis = 100)
+        }
+
+        _state.update {
+            it.copy(
+                isNotifyingNow = false
             )
         }
 

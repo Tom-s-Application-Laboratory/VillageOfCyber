@@ -15,19 +15,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.villageofcyber.R
-import com.example.villageofcyber.inGame.presentation.component.BlackPanel
 import com.example.villageofcyber.inGame.presentation.component.ButtonDoVoting
 import com.example.villageofcyber.inGame.presentation.component.ButtonOpenCommandMenu
 import com.example.villageofcyber.inGame.presentation.component.CharacterBoard
 import com.example.villageofcyber.inGame.presentation.component.CommandMenu
 import com.example.villageofcyber.inGame.presentation.component.DailyStatusPanel
 import com.example.villageofcyber.inGame.presentation.component.NoticeBoard
+import com.example.villageofcyber.inGame.presentation.component.NoticeSpot
 import com.example.villageofcyber.inGame.presentation.component.RoleBoard
 import com.example.villageofcyber.inGame.presentation.component.SpeakingSpot
 import com.example.villageofcyber.inGame.presentation.viewModel.InGameAction
@@ -78,8 +77,9 @@ fun InGameScreen(
                     killed = state.killed
                 )
             }
-            Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
             if(state.visibleNoticeBoard) {
+                Spacer(modifier = Modifier.padding(vertical = 10.dp))
                 NoticeBoard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -109,6 +109,7 @@ fun InGameScreen(
                 }
             }
             if(state.visibleCommandMenu) {
+                Spacer(modifier = Modifier.padding(vertical = 10.dp))
                 CommandMenu(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -123,25 +124,40 @@ fun InGameScreen(
                         .height(100.dp)
                 )
             }
-        }
-        if(state.visibleSpeakingSpot) {
-            SpeakingSpot(
-                modifier = Modifier
-                    .width(350.dp)
-                    .height(400.dp),
-                who = state.characterFaceWhoIsSpeaking ?: throw Exception("from InGameScreen. there is no person on speaking spot"),
-                message = state.messageFromSpeaker,
-                onClick = {
-                    onAction(InGameAction.OnClickNextSpeaking)
-                }
-            )
+            if(state.visibleNoticeSpot) {
+                Spacer(modifier = Modifier.padding(vertical = 20.dp))
+                NoticeSpot(
+                    modifier = Modifier
+                        .width(350.dp)
+                        .height(400.dp),
+                    who = state.characterFaceWhoIsNotified ?: throw Exception("there is no person to notified"),
+                    message = state.messageFromWorld,
+                    onClick = {
+                        onAction(InGameAction.OnClickNextSpeaking)
+                    }
+                )
+            }
+            if(state.visibleSpeakingSpot) {
+                Spacer(modifier = Modifier.padding(vertical = 20.dp))
+                SpeakingSpot(
+                    modifier = Modifier
+                        .width(350.dp)
+                        .height(400.dp),
+                    who = state.characterFaceWhoIsSpeaking ?: throw Exception("there is no person to speak"),
+                    headCounter = state.headCounter,
+                    message = state.messageFromSpeaker,
+                    onClick = {
+                        onAction(InGameAction.OnClickNextSpeaking)
+                    }
+                )
+            }
         }
     }
-    BlackPanel(
-        modifier = Modifier
-            .fillMaxSize()
-            .alpha(state.transparencyOfBlackPanel)
-    )
+//    BlackPanel(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .alpha(state.transparencyOfBlackPanel)
+//    )
 }
 
 @Preview

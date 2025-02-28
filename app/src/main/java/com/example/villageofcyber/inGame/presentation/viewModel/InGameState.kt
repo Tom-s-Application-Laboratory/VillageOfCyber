@@ -6,10 +6,15 @@ data class InGameState(
     val visibleNoticeBoard: Boolean = true,
     val messageToNoticeBoard: String = "",
 
+    val visibleNoticeSpot: Boolean = false,
+    val characterFaceWhoIsNotified: Int? = null,
+    val messageFromWorld: String = "",
+    val isNotifyingNow: Boolean = false,
+
     val visibleSpeakingSpot: Boolean = false,
-    val characterFaceWhoIsSpeaking: Int? = null,
-    val messageFromSpeaker: String = "",
-    val isTalkingNow: Boolean = false,
+    val characterFaceWhoIsSpeaking: List<Int>? = null,
+    val messageFromSpeaker: Pair<String, String> = Pair("", ""),
+    val headCounter: Int = 0,
 
     val visibleCommandMenu: Boolean = false,
     val hasDisclosedCoworker: Boolean = false,
