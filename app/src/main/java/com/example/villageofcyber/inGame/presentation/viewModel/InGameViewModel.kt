@@ -43,7 +43,7 @@ class InGameViewModel(
     private val roleStickerMap: MutableMap<Int, Int> = mutableMapOf()
     private val roleStickers: Map<Role, List<Int>> = repository.getRoleStickers()
 
-    private val characters = getInitializedCharactersUseCase.execute()
+    private val characters = getInitializedCharactersUseCase.execute().shuffled()
 
     init {
         val characterPortraitIds: List<Int> = getCharacterMiniFacesUseCase.execute(characters)
@@ -51,6 +51,7 @@ class InGameViewModel(
         _state.update {
             it.copy(
                 characters = characters,
+                charactersSurviveStatus = characters.map { character ->  character.alive },
                 characterPortraitIds = characterPortraitIds,
                 coworkerPlace = getCoworkersUseCase.execute(characters),
                 wolfTeamPlace = getWolfTeamUseCase.execute(characters),
@@ -77,75 +78,180 @@ class InGameViewModel(
                 InGameAction.OnClickHunterDirectingBoard -> openDirectingBoard(whichMenu = 2)
                 InGameAction.OnClickProphetDirectingBoard -> openDirectingBoard(whichMenu = 1)
                 InGameAction.OnClickCloseDirectingBoard -> closeDirectingBoard()
-                InGameAction.OnClickAutoVoting -> doVote()
+                InGameAction.OnClickAutoVoting -> doVote(direct = -1)
                 InGameAction.OnClickVotingResultPanel -> clickEvent()
+                InGameAction.OnClickOpenTargetBoard -> openTargetBoard()
+                InGameAction.OnClickCloseTargetBoard -> closeTargetBoard()
+                InGameAction.OnClickChangePageOnTargetBoard -> changePageOnTargetBoard()
+                is InGameAction.OnClickDirectVoting -> doVote(direct = action.direct)
             }
         }
     }
 
-    private suspend fun doVote() {
+    private fun changePageOnTargetBoard() {
+        if(_state.value.currentPageOnTargetBoard == 1) {
+            _state.update {
+                it.copy(
+                    currentPageOnTargetBoard = 2
+                )
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    currentPageOnTargetBoard = 1
+                )
+            }
+        }
+    }
+
+    private fun closeTargetBoard() {
+        _state.update {
+            it.copy(
+                visibleTargetBoard = false,
+                visibleCommandMenu = true
+            )
+        }
+    }
+
+    private fun openTargetBoard() {
+        _state.update {
+            it.copy(
+                visibleCommandMenu = false,
+                visibleTargetBoard = true
+            )
+        }
+    }
+
+    private suspend fun doVote(direct: Int) {
         val candidates = characters.filter { character ->
             character.alive == SurviveStatus.ALIVE
         }
 
         var personWhoWillBeKilled: Character? = null
-        var isDeadLock: Boolean = true
 
-        while (isDeadLock) {
-            candidates.forEach { candidate ->
-                candidate.voteCount = 0
-            }
+        if(direct == -1) {
+            var isDeadLock: Boolean = true
 
-            _state.value.votingBox.clear()
-            _state.value.voteCount.clear()
-
-            characters.filter { character ->
-                character.alive == SurviveStatus.ALIVE
-            }.onEach { voter ->
-
-                val candidate = if (voter.role == Role.COWORKER) {
-                    candidates.filter { candidate ->
-                        candidate.name != voter.name && candidate.role != Role.COWORKER
-                    }.random()
-                } else if (voter.role == Role.WOLF || voter.role == Role.BETRAYER) {
-                    candidates.filter { candidate ->
-                        candidate.name != voter.name && candidate.role != Role.WOLF && candidate.role != Role.BETRAYER
-                    }.random()
-                } else {
-                    candidates.filter { candidate ->
-                        candidate.name != voter.name
-                    }.random()
+            while (isDeadLock) {
+                candidates.forEach { candidate ->
+                    candidate.voteCount = 0
                 }
 
-                candidate.voteCount++
-                _state.value.votingBox.add(Pair<String, String>(voter.name, candidate.name))
+                _state.value.votingBox.clear()
+                _state.value.voteCount.clear()
+
+                characters.filter { character ->
+                    character.alive == SurviveStatus.ALIVE
+                }.onEach { voter ->
+
+                    val candidate = if (voter.role == Role.COWORKER) {
+                        candidates.filter { candidate ->
+                            candidate.name != voter.name && candidate.role != Role.COWORKER
+                        }.random()
+                    } else if (voter.role == Role.WOLF || voter.role == Role.BETRAYER) {
+                        candidates.filter { candidate ->
+                            candidate.name != voter.name && candidate.role != Role.WOLF && candidate.role != Role.BETRAYER
+                        }.random()
+                    } else {
+                        candidates.filter { candidate ->
+                            candidate.name != voter.name
+                        }.random()
+                    }
+
+                    candidate.voteCount++
+                    _state.value.votingBox.add(Pair<String, String>(voter.name, candidate.name))
+                }
+
+                candidates.forEach { candidate ->
+                    _state.value.voteCount.add(
+                        Pair<String, Int>(
+                            candidate.name,
+                            candidate.voteCount
+                        )
+                    )
+                }
+
+
+                val text: StringBuilder = StringBuilder()
+
+                repeat(_state.value.votingBox.size) { index ->
+                    text.append("${_state.value.votingBox[index].first}: ${_state.value.voteCount[index].second}    투표처 →${_state.value.votingBox[index].second}\n")
+                }
+
+                printTextWithTypingEffectOnVotingResultPanel(text = text.toString())
+
+                personWhoWillBeKilled = candidates.reduce { acc, character ->
+                    if (acc.voteCount > character.voteCount) acc else character
+                }
+
+                isDeadLock = if (
+                    candidates.filter {
+                        it.voteCount == candidates.reduce { acc, character ->
+                            if (acc.voteCount > character.voteCount) acc else character
+                        }.voteCount
+                    }.size >= 2
+                ) true else false
             }
-
-            candidates.forEach { candidate ->
-                _state.value.voteCount.add(Pair<String, Int>(candidate.name, candidate.voteCount))
+        } else {
+            _state.update {
+                it.copy(
+                    visibleTargetBoard = false
+                )
             }
+            var isDeadLock: Boolean = true
+
+            while (isDeadLock) {
+                candidates.forEach { candidate ->
+                    candidate.voteCount = 0
+                }
+
+                _state.value.votingBox.clear()
+                _state.value.voteCount.clear()
+
+                characters.filter { character ->
+                    character.alive == SurviveStatus.ALIVE
+                }.onEach { voter ->
+
+                    val candidate = if(characters[direct].name != voter.name) characters[direct] else candidates.filter { candidate ->
+                        candidate.name != voter.name
+                    }.random()
+
+                    candidate.voteCount++
+                    _state.value.votingBox.add(Pair<String, String>(voter.name, candidate.name))
+                }
+
+                candidates.forEach { candidate ->
+                    _state.value.voteCount.add(
+                        Pair<String, Int>(
+                            candidate.name,
+                            candidate.voteCount
+                        )
+                    )
+                }
 
 
-            val text: StringBuilder = StringBuilder()
+                val text: StringBuilder = StringBuilder()
 
-            repeat(_state.value.votingBox.size) { index ->
-                text.append("${_state.value.votingBox[index].first}: ${_state.value.voteCount[index].second}    투표처 →${_state.value.votingBox[index].second}\n")
+                repeat(_state.value.votingBox.size) { index ->
+                    text.append("${_state.value.votingBox[index].first}: ${_state.value.voteCount[index].second}    투표처 →${_state.value.votingBox[index].second}\n")
+                }
+
+                printTextWithTypingEffectOnVotingResultPanel(text = text.toString())
+
+                personWhoWillBeKilled = candidates.reduce { acc, character ->
+                    if (acc.voteCount > character.voteCount) acc else character
+                }
+
+                isDeadLock = if (
+                    candidates.filter {
+                        it.voteCount == candidates.reduce { acc, character ->
+                            if (acc.voteCount > character.voteCount) acc else character
+                        }.voteCount
+                    }.size >= 2
+                ) true else false
             }
-
-            printTextWithTypingEffectOnVotingResultPanel(text = text.toString())
-
-            personWhoWillBeKilled = candidates.reduce { acc, character ->
-                if (acc.voteCount > character.voteCount) acc else character
-            }
-
-            isDeadLock = if (
-                candidates.filter {
-                    it.voteCount == candidates.reduce { acc, character ->
-                        if(acc.voteCount > character.voteCount) acc else character
-                    }.voteCount
-                }.size >= 2
-            ) true else false
         }
+
         _state.update {
             it.copy(
                 visibleSpeakingSpot = true,
@@ -726,7 +832,9 @@ class InGameViewModel(
         }
         _state.update {
             it.copy(
-                roleStickerMap = roleStickerMap
+                characters = characters,
+                roleStickerMap = roleStickerMap,
+                charactersSurviveStatus = characters.map { character -> character.alive }
             )
         }
     }

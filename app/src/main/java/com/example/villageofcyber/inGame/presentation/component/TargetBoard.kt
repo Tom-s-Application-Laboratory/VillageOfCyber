@@ -1,6 +1,7 @@
 package com.example.villageofcyber.inGame.presentation.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -12,18 +13,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.villageofcyber.R
+import com.example.villageofcyber.inGame.domain.modelClass.SurviveStatus
 
 @Composable
 fun TargetBoard(
     modifier: Modifier = Modifier,
     characterPortrait: List<Int>,
-    page: Int
+    characterSurviveStatus: List<SurviveStatus> = emptyList(),
+    page: Int,
+    onClickReturnButton: () -> Unit = {},
+    onClickPageButton: () -> Unit = {},
+    onClickTarget: (Int) -> Unit = {}
 ) {
     val rows = characterPortrait.chunked(size = 4)
 
@@ -36,7 +41,7 @@ fun TargetBoard(
         Column(
             modifier = Modifier
                 .matchParentSize(),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(space = maxHeight * 0.1f)
         ) {
             Row(
                 modifier = Modifier
@@ -48,7 +53,12 @@ fun TargetBoard(
                         Image(
                             modifier = Modifier
                                 .width(maxWidth * 0.2f)
-                                .height(maxHeight * 0.35f),
+                                .height(maxHeight * 0.3f)
+                                .clickable {
+                                    if(characterSurviveStatus[index] == SurviveStatus.ALIVE) {
+                                        onClickTarget(index)
+                                    }
+                                },
                             painter = painterResource(id = rows[0][index]),
                             contentScale = ContentScale.FillBounds,
                             contentDescription = null
@@ -59,7 +69,12 @@ fun TargetBoard(
                         Image(
                             modifier = Modifier
                                 .width(maxWidth * 0.2f)
-                                .height(maxHeight * 0.35f),
+                                .height(maxHeight * 0.3f)
+                                .clickable {
+                                    if(characterSurviveStatus[8 + index] == SurviveStatus.ALIVE) {
+                                        onClickTarget(8 + index)
+                                    }
+                                },
                             painter = painterResource(id = rows[2][index]),
                             contentScale = ContentScale.FillBounds,
                             contentDescription = null
@@ -77,7 +92,12 @@ fun TargetBoard(
                         Image(
                             modifier = Modifier
                                 .width(maxWidth * 0.2f)
-                                .height(maxHeight * 0.35f),
+                                .height(maxHeight * 0.3f)
+                                .clickable {
+                                    if(characterSurviveStatus[4 + index] == SurviveStatus.ALIVE) {
+                                        onClickTarget(4 + index)
+                                    }
+                                },
                             painter = painterResource(id = rows[1][index]),
                             contentScale = ContentScale.FillBounds,
                             contentDescription = null
@@ -88,7 +108,12 @@ fun TargetBoard(
                         Image(
                             modifier = Modifier
                                 .width(maxWidth * 0.2f)
-                                .height(maxHeight * 0.35f),
+                                .height(maxHeight * 0.3f)
+                                .clickable {
+                                    if(characterSurviveStatus[12 + index] == SurviveStatus.ALIVE) {
+                                        onClickTarget(12 + index)
+                                    }
+                                },
                             painter = painterResource(id = rows[3][index]),
                             contentScale = ContentScale.FillBounds,
                             contentDescription = null
@@ -104,19 +129,28 @@ fun TargetBoard(
             ) {
                 ButtonReturn(
                     modifier = Modifier
-                        .size(maxWidth * 0.21f)
+                        .size(maxWidth * 0.21f),
+                    onClick = {
+                        onClickReturnButton()
+                    }
                 )
                 if(page == 1) {
                     ButtonNext(
                         modifier = Modifier
                             .width(maxWidth * 0.22f)
-                            .height(maxHeight * 0.13f)
+                            .height(maxHeight * 0.13f),
+                        onClick = {
+                            onClickPageButton()
+                        }
                     )
                 } else {
                     ButtonPrevious(
                         modifier = Modifier
                             .width(maxWidth * 0.22f)
-                            .height(maxHeight * 0.13f)
+                            .height(maxHeight * 0.13f),
+                        onClick = {
+                            onClickPageButton()
+                        }
                     )
                 }
             }

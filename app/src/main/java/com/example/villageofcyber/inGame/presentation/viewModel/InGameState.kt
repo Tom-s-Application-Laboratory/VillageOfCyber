@@ -1,6 +1,7 @@
 package com.example.villageofcyber.inGame.presentation.viewModel
 
 import com.example.villageofcyber.inGame.domain.modelClass.Character
+import com.example.villageofcyber.inGame.domain.modelClass.SurviveStatus
 
 data class InGameState(
     val visibleNoticeBoard: Boolean = true,
@@ -22,6 +23,9 @@ data class InGameState(
     val hasDisclosedTraitor: Boolean = false,
     val hasDisclosedHunter: Boolean = false,
 
+    val visibleTargetBoard: Boolean = false,
+    val currentPageOnTargetBoard: Int = 1,
+
     val visibleDirectingBoard: Boolean = false,
     val peopleYouCanDirect: List<String> = emptyList(),
     val whichMenu: Int = 0,
@@ -41,6 +45,7 @@ data class InGameState(
     val currentTraitorRoleSticker: Int = 0,
 
     val characters: List<Character> = emptyList(),
+    val charactersSurviveStatus: List<SurviveStatus> = emptyList(),
     val coworkerPlace: List<Character> = emptyList(),
     val wolfTeamPlace: List<Character> = emptyList(),
 

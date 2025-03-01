@@ -85,7 +85,7 @@ fun CommandMenu(
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickOpenTargetBoard)
             }
             ButtonCloseCommandMenu(
                 modifier = Modifier
