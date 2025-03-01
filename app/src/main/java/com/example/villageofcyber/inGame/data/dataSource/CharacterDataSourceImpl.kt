@@ -52,7 +52,7 @@ class CharacterDataSourceImpl : CharacterDataSource {
         R.drawable.mini_killed_servant,
         R.drawable.mini_killed_peerage,
         R.drawable.mini_killed_dancer,
-        R.drawable.mini_attacked_washer,
+        R.drawable.mini_killed_washer,
         R.drawable.mini_killed_brothel,
         R.drawable.mini_killed_sword_woman,
         R.drawable.mini_killed_village_girl,
