@@ -25,6 +25,7 @@ import com.example.villageofcyber.inGame.presentation.component.ButtonOpenComman
 import com.example.villageofcyber.inGame.presentation.component.CharacterBoard
 import com.example.villageofcyber.inGame.presentation.component.CommandMenu
 import com.example.villageofcyber.inGame.presentation.component.DailyStatusPanel
+import com.example.villageofcyber.inGame.presentation.component.DirectingBoard
 import com.example.villageofcyber.inGame.presentation.component.NoticeBoard
 import com.example.villageofcyber.inGame.presentation.component.NoticeSpot
 import com.example.villageofcyber.inGame.presentation.component.RoleBoard
@@ -150,6 +151,17 @@ fun InGameScreen(
                         onAction(InGameAction.OnClickNextSpeaking)
                     }
                 )
+            }
+            if(state.visibleDirectingBoard) {
+                DirectingBoard(
+                    modifier = Modifier
+                        .padding(top = 5.dp, bottom = 20.dp, start = 10.dp, end = 10.dp)
+                        .weight(1f),
+                    peopleYouCanDirect = state.peopleYouCanDirect,
+                    whichMenu = state.whichMenu
+                ) { inGameAction ->
+                    onAction(inGameAction)
+                }
             }
         }
     }

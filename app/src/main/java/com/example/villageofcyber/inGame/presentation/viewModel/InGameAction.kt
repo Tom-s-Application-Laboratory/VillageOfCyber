@@ -10,4 +10,7 @@ sealed interface InGameAction {
     data object OnClickComingOutProphet: InGameAction
     data object OnClickComingOutTraitor: InGameAction
     data object OnClickComingOutHunter: InGameAction
+    data object OnClickProphetDirectingBoard: InGameAction
+    data object OnClickHunterDirectingBoard: InGameAction
+    data object OnClickCloseDirectingBoard: InGameAction
 }

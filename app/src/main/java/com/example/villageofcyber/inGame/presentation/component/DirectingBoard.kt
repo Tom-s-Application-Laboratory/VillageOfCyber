@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,13 +26,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.villageofcyber.R
+import com.example.villageofcyber.inGame.presentation.viewModel.InGameAction
 
 @Composable
 fun DirectingBoard(
     modifier: Modifier = Modifier,
     peopleYouCanDirect: List<String> = emptyList(),
     whichMenu: Int,
+    onAction: (InGameAction) -> Unit = {}
 ) {
     BoxWithConstraints(
         modifier = modifier
@@ -80,14 +82,18 @@ fun DirectingBoard(
         Row(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(bottom = 10.dp),
+                .padding(bottom = 10.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ButtonReturn(
                 modifier = Modifier
-                    .size(maxHeight * 0.15f)
+                    .size(maxHeight * 0.15f),
+                onClick = {
+                    onAction(InGameAction.OnClickCloseDirectingBoard)
+                }
             )
-            Spacer(modifier = Modifier.width(maxWidth * 0.31f))
+            Spacer(modifier = Modifier.width(maxWidth * 0.4f))
             if(whichMenu == 1) {
                 ButtonSamePredict(
                     modifier = Modifier
@@ -109,7 +115,7 @@ private fun DirectingBoardPreview() {
     DirectingBoard(
         modifier = Modifier
             .width(150.dp)
-            .height(300.dp),
+            .height(250.dp),
         peopleYouCanDirect = listOf(
             "음악가",
             "소사",

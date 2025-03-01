@@ -22,6 +22,10 @@ data class InGameState(
     val hasDisclosedTraitor: Boolean = false,
     val hasDisclosedHunter: Boolean = false,
 
+    val visibleDirectingBoard: Boolean = false,
+    val peopleYouCanDirect: List<String> = emptyList(),
+    val whichMenu: Int = 0,
+
     val dayStart: Boolean = true,
     val transparencyOfBlackPanel: Float = 1f,
 

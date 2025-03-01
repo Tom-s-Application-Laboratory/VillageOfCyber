@@ -65,14 +65,14 @@ fun CommandMenu(
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickProphetDirectingBoard)
             }
             ButtonDirectHunter(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
             ) {
-
+                onAction(InGameAction.OnClickHunterDirectingBoard)
             }
         }
         Row(

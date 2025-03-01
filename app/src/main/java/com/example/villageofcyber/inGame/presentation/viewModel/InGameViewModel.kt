@@ -74,9 +74,37 @@ class InGameViewModel(
                 InGameAction.OnClickComingOutProphet -> comingOutProphet()
                 InGameAction.OnClickComingOutTraitor -> comingOutTraitor()
                 InGameAction.OnClickComingOutHunter -> comingOutHunter()
+                InGameAction.OnClickHunterDirectingBoard -> openDirectingBoard(whichMenu = 2)
+                InGameAction.OnClickProphetDirectingBoard -> openDirectingBoard(whichMenu = 1)
+                InGameAction.OnClickCloseDirectingBoard -> closeDirectingBoard()
             }
         }
     }
+
+
+    private fun closeDirectingBoard() {
+        _state.update {
+            it.copy(
+                visibleDirectingBoard = false,
+                visibleNoticeBoard = true
+            )
+        }
+    }
+
+    private fun openDirectingBoard(whichMenu: Int) {
+        val names = if(whichMenu == 1) characters.filter { character ->
+            character.alive == SurviveStatus.ALIVE && character.isDisClosed && (character.role == Role.PROPHET || character.fakeRole == Role.PROPHET)
+        }.map { it.name }.toList() else characters.filter { character ->
+            character.alive == SurviveStatus.ALIVE && character.isDisClosed && (character.role == Role.HUNTER || character.fakeRole == Role.HUNTER)
+        }.map { it.name }.toList()
+
+        _state.update {
+            it.copy(
+                visibleDirectingBoard = true,
+                visibleCommandMenu = false,
+                whichMenu = whichMenu,
+                peopleYouCanDirect = names
+            )
 
     private fun playEachRole(direct: Int) {
         val prophetSurvivor = characters.filter { character ->
@@ -346,6 +374,7 @@ class InGameViewModel(
         disclosedCharacter.forEach { character ->
             character.roleSticker = roleStickers[role]?.get(0)
                 ?: throw Exception("from handleNextMessage")
+            character.isDisClosed = true
         }
         updateCharacterBoard(characters)
     }
