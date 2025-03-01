@@ -32,6 +32,7 @@ data class Character(
 
     val role: Role,
     val fakeRole: Role,
+    var isDisClosed: Boolean = false,
 
     var roleSticker: Int?,
     val factionBadge: MutableList<Int>,
