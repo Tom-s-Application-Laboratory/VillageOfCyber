@@ -37,6 +37,8 @@ data class Character(
     var roleSticker: Int?,
     val factionBadge: MutableList<Int>,
 
+    var voteCount: Int = 0,
+
     val prophetRoleHistory: MutableList<Pair<String, Boolean>>? = null,
     val traitorRoleHistory: MutableList<Pair<String, Boolean>>? = null,
     val hunterRoleHistory: MutableList<Pair<String, Boolean>>? = null,

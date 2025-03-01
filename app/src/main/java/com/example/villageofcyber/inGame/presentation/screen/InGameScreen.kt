@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.villageofcyber.R
+import com.example.villageofcyber.core.navigation.Route
 import com.example.villageofcyber.inGame.presentation.component.ButtonDoVoting
 import com.example.villageofcyber.inGame.presentation.component.ButtonOpenCommandMenu
 import com.example.villageofcyber.inGame.presentation.component.CharacterBoard
@@ -30,6 +32,7 @@ import com.example.villageofcyber.inGame.presentation.component.NoticeBoard
 import com.example.villageofcyber.inGame.presentation.component.NoticeSpot
 import com.example.villageofcyber.inGame.presentation.component.RoleBoard
 import com.example.villageofcyber.inGame.presentation.component.SpeakingSpot
+import com.example.villageofcyber.inGame.presentation.component.VotingResultPanel
 import com.example.villageofcyber.inGame.presentation.viewModel.InGameAction
 import com.example.villageofcyber.inGame.presentation.viewModel.InGameState
 
@@ -105,7 +108,7 @@ fun InGameScreen(
                             .width(120.dp)
                             .height(100.dp)
                     ) {
-
+                        onAction(InGameAction.OnClickAutoVoting)
                     }
                 }
             }
@@ -162,6 +165,18 @@ fun InGameScreen(
                 ) { inGameAction ->
                     onAction(inGameAction)
                 }
+            }
+            if(state.visibleVotingResultPanel) {
+                VotingResultPanel(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp, top = 10.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    message = state.messageToVotingResultPanel,
+                    onClick = {
+                        onAction(InGameAction.OnClickVotingResultPanel)
+                    }
+                )
             }
         }
     }

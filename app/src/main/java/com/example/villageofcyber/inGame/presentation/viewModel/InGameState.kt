@@ -26,12 +26,19 @@ data class InGameState(
     val peopleYouCanDirect: List<String> = emptyList(),
     val whichMenu: Int = 0,
 
+    val visibleVotingResultPanel: Boolean = false,
+    val messageToVotingResultPanel: String = "",
+    val votingBox: MutableList<Pair<String, String>> = mutableListOf(),
+    val voteCount: MutableList<Pair<String, Int>> = mutableListOf(),
+
     val dayStart: Boolean = true,
     val transparencyOfBlackPanel: Float = 1f,
 
 
     val characterPortraitIds: List<Int> = emptyList(),
     val roleStickerMap: Map<Int, Int> = emptyMap(),
+    val currentProphetRoleSticker: Int = 0,
+    val currentTraitorRoleSticker: Int = 0,
 
     val characters: List<Character> = emptyList(),
     val coworkerPlace: List<Character> = emptyList(),

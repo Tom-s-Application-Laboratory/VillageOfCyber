@@ -13,4 +13,6 @@ sealed interface InGameAction {
     data object OnClickProphetDirectingBoard: InGameAction
     data object OnClickHunterDirectingBoard: InGameAction
     data object OnClickCloseDirectingBoard: InGameAction
+    data object OnClickAutoVoting: InGameAction
+    data object OnClickVotingResultPanel: InGameAction
 }
