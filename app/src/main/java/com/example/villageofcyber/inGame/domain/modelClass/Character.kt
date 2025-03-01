@@ -36,6 +36,11 @@ data class Character(
     var roleSticker: Int?,
     val factionBadge: MutableList<Int>,
 
+    val prophetRoleHistory: MutableList<Pair<String, Boolean>>? = null,
+    val traitorRoleHistory: MutableList<Pair<String, Boolean>>? = null,
+    val hunterRoleHistory: MutableList<Pair<String, Boolean>>? = null,
+    val cursorOfHistory: Int = -1,
+
     val dialogueComingOutFirst: String = "",
     val dialogueComingOutLast: String = "",
     val dialoguePleaseThinkAgain: String = "",

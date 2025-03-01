@@ -33,10 +33,6 @@ data class InGameState(
     val coworkerPlace: List<Character> = emptyList(),
     val wolfTeamPlace: List<Character> = emptyList(),
 
-    val prophetRoleHistory: Map<Character, List<Character>> = emptyMap(),
-    val traitorRoleHistory: Map<Character, List<Character>> = emptyMap(),
-    val hunterRoleHistory: Map<Character, List<Character>> = emptyMap(),
-
     val day: Int = -1,
     val survivor: Int = -1,
     val attacked: Int = -1,
