@@ -51,7 +51,7 @@ class InGameViewModel(
         _state.update {
             it.copy(
                 characters = characters,
-                charactersSurviveStatus = characters.map { character ->  character.alive },
+                charactersSurviveStatus = characters.map { character -> character.alive },
                 characterPortraitIds = characterPortraitIds,
                 coworkerPlace = getCoworkersUseCase.execute(characters),
                 wolfTeamPlace = getWolfTeamUseCase.execute(characters),
@@ -89,7 +89,7 @@ class InGameViewModel(
     }
 
     private fun changePageOnTargetBoard() {
-        if(_state.value.currentPageOnTargetBoard == 1) {
+        if (_state.value.currentPageOnTargetBoard == 1) {
             _state.update {
                 it.copy(
                     currentPageOnTargetBoard = 2
@@ -129,7 +129,7 @@ class InGameViewModel(
 
         var personWhoWillBeKilled: Character? = null
 
-        if(direct == -1) {
+        if (direct == -1) {
             var isDeadLock: Boolean = true
 
             while (isDeadLock) {
@@ -212,9 +212,10 @@ class InGameViewModel(
                     character.alive == SurviveStatus.ALIVE
                 }.onEach { voter ->
 
-                    val candidate = if(characters[direct].name != voter.name) characters[direct] else candidates.filter { candidate ->
-                        candidate.name != voter.name
-                    }.random()
+                    val candidate =
+                        if (characters[direct].name != voter.name) characters[direct] else candidates.filter { candidate ->
+                            candidate.name != voter.name
+                        }.random()
 
                     candidate.voteCount++
                     _state.value.votingBox.add(Pair<String, String>(voter.name, candidate.name))
@@ -272,8 +273,11 @@ class InGameViewModel(
                     personWhoWillBeKilled.fakeRole == Role.TRAITOR ||
                     personWhoWillBeKilled.fakeRole == Role.HUNTER)
         ) {
-            printTextWithTypingEffectOnSpeakingSpot(name = personWhoWillBeKilled.name, text = personWhoWillBeKilled.dialoguePleaseThinkAgain)
-            if(personWhoWillBeKilled.fakeRole != Role.NONE) {
+            printTextWithTypingEffectOnSpeakingSpot(
+                name = personWhoWillBeKilled.name,
+                text = personWhoWillBeKilled.dialoguePleaseThinkAgain
+            )
+            if (personWhoWillBeKilled.fakeRole != Role.NONE) {
                 endComingOut(listOf(personWhoWillBeKilled), personWhoWillBeKilled.fakeRole)
             } else {
                 endComingOut(listOf(personWhoWillBeKilled), personWhoWillBeKilled.role)
@@ -368,6 +372,7 @@ class InGameViewModel(
     }
 
     private fun playEachRole(direct: Int) {
+        // 예언자 역할
         val prophetSurvivor = characters.filter { character ->
             character.alive == SurviveStatus.ALIVE && (character.role == Role.PROPHET || character.fakeRole == Role.PROPHET)
         }
@@ -386,6 +391,7 @@ class InGameViewModel(
             }
         }
 
+        // 영매사 역할
         val traitorSurvivor = characters.filter { character ->
             character.alive == SurviveStatus.ALIVE && (character.role == Role.TRAITOR || character.fakeRole == Role.TRAITOR)
         }
@@ -403,9 +409,44 @@ class InGameViewModel(
             }
         }
 
+        // 늑대 역할
+        val wolf = characters.filter { character ->
+            character.alive == SurviveStatus.ALIVE && character.role == Role.WOLF
+        }.random()
+
+        var attackTarget = characters.filter { character ->
+            character.alive == SurviveStatus.ALIVE && character.role == Role.HUNTER && character.isDisClosed
+        }.firstOrNull()
+
+        if (attackTarget == null) {
+            val prophets: MutableList<Character> = mutableListOf()
+            val traitors: MutableList<Character> = mutableListOf()
+
+            characters.forEach { character ->
+                if (character.alive == SurviveStatus.ALIVE && character.isDisClosed &&
+                    (character.role == Role.PROPHET || character.fakeRole == Role.PROPHET)
+                ) {
+                    prophets.add(character)
+                } else if(character.alive == SurviveStatus.ALIVE && character.isDisClosed &&
+                    (character.role == Role.TRAITOR || character.fakeRole == Role.TRAITOR)
+                ) {
+                    traitors.add(character)
+                }
+            }
+
+            attackTarget = if(prophets.size == 1 && prophets[0].role == Role.PROPHET) prophets[0] else
+                if(traitors.size == 1 && traitors[0].role == Role.TRAITOR) traitors[0] else characters.filter { character ->
+                    character.alive == SurviveStatus.ALIVE && character.role != Role.WOLF && character.role != Role.BETRAYER
+                }.random()
+        }
+
+        // 사냥꾼 역할
         val hunterSurvivor = characters.filter { character ->
             character.alive == SurviveStatus.ALIVE && (character.role == Role.HUNTER || character.fakeRole == Role.HUNTER)
         }
+
+        var realGuardTarget: Character? = null
+        val targetNames: MutableList<String> = mutableListOf()
 
         hunterSurvivor.onEach { hunter ->
             val target = if (direct == -1) characters.filter { character ->
@@ -414,11 +455,28 @@ class InGameViewModel(
                         !hunter.hunterRoleHistory!!.any { it.first == character.name }
             }.random() else characters[direct]
 
-            if (target.role == Role.WOLF) {
+            if(hunter.role == Role.HUNTER) {
+                realGuardTarget = target
+            }
+
+            targetNames.add(element = target.name)
+            if (target.name == attackTarget.name) {
                 hunter.hunterRoleHistory?.add(Pair<String, Boolean>(target.name, true))
             } else {
                 hunter.hunterRoleHistory?.add(Pair<String, Boolean>(target.name, false))
             }
+        }
+
+        if(realGuardTarget != null && realGuardTarget!!.name == attackTarget.name) {
+            hunterSurvivor.forEach { hunter ->
+                hunter.hunterRoleHistory?.add(Pair<String, Boolean>(realGuardTarget!!.name, true))
+            }
+        } else if(realGuardTarget != null) {    // 사냥꾼이 못 지킨 경우
+            hunterSurvivor.forEach { hunter ->
+                hunter.hunterRoleHistory?.add(Pair<String, Boolean>(realGuardTarget!!.name, false))
+            }
+
+            // 사망 공지 해주는 함수를 넣고 매개변수로 attackedTarget 넣어 주면 될 듯
         }
     }
 
@@ -440,7 +498,7 @@ class InGameViewModel(
         }.size
 
         _state.value.coworkerPlace.forEach { coworker ->
-            if(coworker.isDisClosed) {
+            if (coworker.isDisClosed) {
                 noNeedToComingOut++
             }
         }
@@ -666,10 +724,11 @@ class InGameViewModel(
                 headCounter = 0
             )
         }
-        if(role == Role.PROPHET) {
+        if (role == Role.PROPHET) {
             disclosedCharacter.forEach { character ->
-                character.roleSticker = roleStickers[role]?.get(index = _state.value.currentProphetRoleSticker)
-                    ?: throw Exception("from handleNextMessage")
+                character.roleSticker =
+                    roleStickers[role]?.get(index = _state.value.currentProphetRoleSticker)
+                        ?: throw Exception("from handleNextMessage")
                 character.isDisClosed = true
                 _state.update {
                     it.copy(
@@ -677,10 +736,11 @@ class InGameViewModel(
                     )
                 }
             }
-        } else if(role == Role.TRAITOR) {
+        } else if (role == Role.TRAITOR) {
             disclosedCharacter.forEach { character ->
-                character.roleSticker = roleStickers[role]?.get(index = _state.value.currentTraitorRoleSticker)
-                    ?: throw Exception("from handleNextMessage")
+                character.roleSticker =
+                    roleStickers[role]?.get(index = _state.value.currentTraitorRoleSticker)
+                        ?: throw Exception("from handleNextMessage")
                 character.isDisClosed = true
                 _state.update {
                     it.copy(
@@ -767,7 +827,6 @@ class InGameViewModel(
 
         updateCharacterBoard(characters)
         updateDailyStatusPanel(characters)
-
     }
 
     private fun updateCharacterBoard(characters: List<Character>) {
@@ -796,8 +855,9 @@ class InGameViewModel(
                 }
             }
 
-            if(character.isDisClosed) {
-                roleStickerMap[index] = character.roleSticker ?: throw Exception("from updateCharacterBoard / this character hasn't roleSticker")
+            if (character.isDisClosed) {
+                roleStickerMap[index] = character.roleSticker
+                    ?: throw Exception("from updateCharacterBoard / this character hasn't roleSticker")
             }
 //            if (character.roleSticker != null) {
 //                if (character.role == Role.COWORKER && !_state.value.hasDisclosedCoworker) {   // when 구문을 사용하면 Role을 모두 구현을 강제해서 일단은 if else로 처리
