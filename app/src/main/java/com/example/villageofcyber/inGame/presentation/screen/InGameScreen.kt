@@ -32,6 +32,7 @@ import com.example.villageofcyber.inGame.presentation.component.NoticeBoard
 import com.example.villageofcyber.inGame.presentation.component.NoticeSpot
 import com.example.villageofcyber.inGame.presentation.component.RoleBoard
 import com.example.villageofcyber.inGame.presentation.component.SpeakingSpot
+import com.example.villageofcyber.inGame.presentation.component.TargetBoard
 import com.example.villageofcyber.inGame.presentation.component.VotingResultPanel
 import com.example.villageofcyber.inGame.presentation.viewModel.InGameAction
 import com.example.villageofcyber.inGame.presentation.viewModel.InGameState
@@ -177,6 +178,26 @@ fun InGameScreen(
                         onAction(InGameAction.OnClickVotingResultPanel)
                     }
                 )
+            }
+
+            if(state.visibleTargetBoard) {
+                TargetBoard(
+                    modifier = Modifier
+                        .padding(top = 40.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    characterPortrait = state.characterPortraitIds,
+                    characterSurviveStatus = state.charactersSurviveStatus,
+                    page= state.currentPageOnTargetBoard,
+                    onClickReturnButton = {
+                        onAction(InGameAction.OnClickCloseTargetBoard)
+                    },
+                    onClickPageButton = {
+                        onAction(InGameAction.OnClickChangePageOnTargetBoard)
+                    }
+                ) { target ->
+                    onAction(InGameAction.OnClickDirectVoting(direct = target))
+                }
             }
         }
     }

@@ -15,4 +15,8 @@ sealed interface InGameAction {
     data object OnClickCloseDirectingBoard: InGameAction
     data object OnClickAutoVoting: InGameAction
     data object OnClickVotingResultPanel: InGameAction
+    data object OnClickOpenTargetBoard: InGameAction
+    data object OnClickCloseTargetBoard: InGameAction
+    data object OnClickChangePageOnTargetBoard: InGameAction
+    data class OnClickDirectVoting(val direct: Int): InGameAction
 }
